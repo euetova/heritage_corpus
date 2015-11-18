@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load annotator_tags %}
+{% block title %}Russian Learner Corpus Result{% endblock %}
+{% block meta_content %}Result{% endblock %}
+
+{% block scripts %}
+{% for i in j %}
+     <script>
+    {{ i|safe }}
+    </script>
+{% endfor %}
+{% endblock %}
+    {% block upper-row %}
+            {% endblock %}
+
+    {% block other %}
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.token').tooltip({
+    placement : 'top',
+    trigger: 'hover',
+      delay: { "show": 500, "hide": 0 },
+      html: true
+  });
+});
+</script>
+    {% endblock %}
+
+{% block content_header %}Result{% endblock content_header %}
+
+{% block content %}
+    <h1> {{ query }} </h1>
+     <h4><span  class="label label-default">Corpus total: {{ numbers.total_docs }} documents, {{ numbers.total_sents }} sentences, {{ numbers.total_tokens }} words.</span></h4>
+    <h4><span  class="label label-default">Search executed in a user-defined subcorpus of {{ numbers.subcorpus_docs }} documents, {{ numbers.subcorpus_sents }} sentences, {{ numbers.subcorpus_words }} words.</span></h4>
+    <h4><span  class="label label-default">Found: {{ total_docs }} documents, {{ total }} contexts.</span></h4>
+    <ol start="{{ result.number|multiply:10 }}">
+
+    {% for sent in result %}
+        <li><div class="doctitle">{{ sent.doc_id }}</div>
+            <span id="{{ sent.id }}" contenteditable="false"> <!-- onmouseup="snapSelectionToWord()"> -->
+                {{sent.tagged|safe|linebreaksbr}}
+            </span>
+        <span class="correct_sentence" contenteditable="false"> <!-- onmouseup="snapSelectionToWord()"> -->
+                {{sent.correct|safe|linebreaksbr}}
+            </span>
+        </li>
+		{% endfor %}
+    </ol>
+
+
+      <nav>
+  <ul class="pagination pagination-sm">
+       {% if result.has_previous %}
+           <li>
+      <a href="{{ path }}&page={{ result.previous_page_number }}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+            {% endif %}
+{% for i in result.paginator.page_range %}
+    <li
+    {% if result.number == i %}
+            class="active"
+            {% endif %}
+    ><a href="{{ path }}&page={{ i }}">{{ i }}</a></li>
+        {% endfor %}
+  {% if result.has_next %}
+      <li>
+      <a href="{{ path }}&page={{ result.next_page_number }}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+            {% endif %}
+
+  </ul>
+</nav>
+{% endblock content %}

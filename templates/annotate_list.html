@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Russian Learner Corpus Statistics
+
+{% endblock %}
+{% block meta_content %}
+    Statistics
+{% endblock %} 
+
+{% block upper-row %}
+{% endblock %}
+
+{% block content %}
+    <h1>List of documents for annotation</h1>
+
+    <div class="row">
+    <form method="get">
+    <p>Выбрать язык:
+        {% for lang in langs %}
+        <label class="checkbox-inline">
+        <input class="hidden" name="language" value="language">
+          <input type="checkbox" name="{{ lang.0 }}" value=""> {{ lang.1 }}
+        </label>
+        {% endfor %}
+        <input type="submit" class="btn btn-xs btn-primary" value="Filter"></p>
+
+    </form>
+
+    </div>
+    <div class="row">
+    <form method="get">
+   <p>Выбрать разметчика
+        {% for u in users %}
+        <label class="radio-inline">
+        <input class="hidden" name="user" value="user">
+          <input type="radio" name="{{ u.username }}" value=""> {{ u.first_name }} {{ u.last_name }}
+        </label>
+        {% endfor %}
+        <input type="submit" class="btn btn-xs btn-primary" value="Filter"></p>
+
+    </form>
+
+    </div>
+<div class="row">
+<div class="col-md-4">
+    <div class="panel panel-primary">
+    <div class="panel-heading">Not annotated</div>
+      <div class="panel-body" style="min-height: 450px; max-height: 450px; overflow-y: scroll;">
+  
+{#      <div>#}
+{#        <a href=".toggle-folder-1" data-toggle="collapse" class="label label-warning">#}
+{#          Annotator_Agreement#}
+{#        </a>#}
+{#        <ul class="toggle-folder-1 collapse list-unstyled">#}
+{#          <!--<li> folder item 1</li>-->#}
+{#          <!--</li> folder item 2</li>-->#}
+{#            {% for doc in docs %}#}
+{#                {% if not doc.annotated %}#}
+{#                    {% if doc.subcorpus == 'RULEC' %}#}
+{#                    <li>#}
+{#                        {{ doc.id }}. <a href="document/{{ doc.id }}/edittest"> {{ doc }} </a>#}
+{#                    </li>#}
+{#                {% endif %}#}
+{#                {% endif %}#}
+{#        {% endfor %}#}
+{#        </ul>#}
+{##}
+{#      </div>#}
+
+      <div>
+        <a href=".toggle-folder-2" data-toggle="collapse"  class="label label-warning">
+          RULEC
+        </a>
+        <ul class="toggle-folder-2 collapse in list-unstyled">
+            {% for doc in docs %}
+                {% if not doc.annotated %}
+                    {% if doc.subcorpus == 'RULEC' %}
+                    <li>
+                        {{ doc.id }}. <a href="document/{{ doc.id }}/edittest"> {{ doc }} </a>
+                    </li>
+                {% endif %}
+                {% endif %}
+        {% endfor %}
+        </ul>
+      <br><a href=".toggle-folder-3" data-toggle="collapse"  class="label label-warning">
+          HSE
+        </a>
+        <ul class="toggle-folder-3 collapse in list-unstyled">
+            {% for doc in docs %}
+                {% if not doc.annotated %}
+                   {% if doc.subcorpus == 'HSE' %}
+                    <li>
+                        {{ doc.id }}. <a href="document/{{ doc.id }}/edittest"> {{ doc }} </a>
+                    </li>
+                {% endif %}
+                {% endif %}
+        {% endfor %}
+        </ul>
+        <ul class="list-unstyled">
+            {% for doc in docs %}
+                {% if not doc.annotated %}
+                   {% if doc.subcorpus == '' %}
+                    <li>
+                        {{ doc.id }}. <a href="document/{{ doc.id }}/edittest"> {{ doc }} </a>
+                    </li>
+                {% endif %}
+                {% endif %}
+        {% endfor %}
+        </ul>
+      </div>
+
+      </div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="panel panel-primary">
+    <div class="panel-heading">Annotated, not checked</div>
+      <div class="panel-body" style="min-height: 450px; max-height: 450px; overflow-y: scroll;">
+          <div>
+            <a href=".toggle-folder-2-1" data-toggle="collapse" class="label label-warning">
+              RULEC
+            </a>
+            <ul class="toggle-folder-2-1 collapse in list-unstyled">
+              <!--<li> folder item 21</li>-->
+              <!--</li> folder item 22</li>-->
+                {% for doc in docs %}
+                    {% if doc.annotated and not doc.checked %}
+                        {% if doc.subcorpus == 'RULEC' %}
+                        <li>
+                            {{ doc.id }}. <a href="document/{{ doc.id }}/edittest">{{ doc }} </a>
+                        </li>
+                    {% endif %}{% endif %}
+                {% endfor %}
+            </ul>
+          <br><a href=".toggle-folder-2-2" data-toggle="collapse" class="label label-warning">
+              HSE
+            </a>
+            <ul class="toggle-folder-2-2 collapse in list-unstyled">
+              <!--<li> folder item 21</li>-->
+              <!--</li> folder item 22</li>-->
+                {% for doc in docs %}
+                    {% if doc.annotated and not doc.checked %}
+                        {% if doc.subcorpus == 'HSE' %}
+                        <li>
+                            {{ doc.id }}. <a href="document/{{ doc.id }}/edittest">{{ doc }} </a>
+                        </li>
+                    {% endif %}{% endif %}
+                {% endfor %}
+            </ul>
+          <ul class="list-unstyled">
+              <!--<li> folder item 21</li>-->
+              <!--</li> folder item 22</li>-->
+                {% for doc in docs %}
+                    {% if doc.annotated and not doc.checked %}
+                        {% if doc.subcorpus == '' %}
+                        <li>
+                            {{ doc.id }}. <a href="document/{{ doc.id }}/edittest">{{ doc }} </a>
+                        </li>
+                    {% endif %}{% endif %}
+                {% endfor %}
+            </ul>
+          </div>
+
+      </div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="panel panel-primary">
+    <div class="panel-heading">Annotated, checked</div>
+      <div class="panel-body" style="min-height: 450px; max-height: 450px; overflow-y: scroll;">
+          <ul class="list-unstyled">
+    {% for doc in docs %}
+        {% if doc.checked %}
+    <li>
+        {{ doc.id }}. <a href="document/{{ doc.id }}/edittest"> {{ doc }} </a>
+    </li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+      </div>
+</div>
+</div>
+</div>
+
+
+
+{% endblock content %}

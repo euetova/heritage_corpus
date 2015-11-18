@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Tag: {{document}}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="http://assets.annotateit.org/annotator/v1.2.7/annotator.min.css">
+{% endblock %}
+
+{% block scripts %}
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+  <script>$('html').ajaxSend(function(event, xhr, settings) { if (!/^https?:.*/.test(settings.url)) xhr.setRequestHeader("X-CSRFToken", "{{csrf_token|escapejs}}"); });</script> <!-- {% csrf_token %} -->
+<script src="http://assets.annotateit.org/annotator/v1.2.7/annotator-full.js"></script>
+
+<script>
+Annotator.Plugin.ReadOnlyAnnotations = function (element) {
+  return {
+    pluginInit: function () {
+      this.annotator
+          .subscribe("annotationViewerShown", function (viewer) {
+            for (var i in viewer.annotations) {
+            	if (viewer.annotations[i].readonly) { 
+            		$(viewer.element).find(".annotator-edit").remove();
+            		$(viewer.element).find(".annotator-delete").remove();
+				}
+			}
+            console.info("The annotation: %o has just been created!", viewer)
+          })
+    }
+  };
+};
+
+jQuery(function ($) {
+    $('#document_body').annotator()
+    	.annotator('addPlugin', 'Tags')
+    	.annotator('addPlugin', 'ReadOnlyAnnotations')
+    	.annotator('addPlugin', 'Store', {
+			  prefix: '{{storage_api_base_url}}',
+			  annotationData: {
+				'document': {{document.id}}
+			  },
+			  loadFromSearch: {
+				'document': {{document.id}}
+			  }
+			});
+});
+</script>
+    <script>
+function snapSelectionToWord() {
+    var sel;
+
+    // Check for existence of window.getSelection() and that it has a
+    // modify() method. IE 9 has both selection APIs but no modify() method.
+    if (window.getSelection && (sel = window.getSelection()).modify) {
+        sel = window.getSelection();
+        if (!sel.isCollapsed) {
+
+            // Detect if selection is backwards
+            var range = document.createRange();
+            range.setStart(sel.anchorNode, sel.anchorOffset);
+            range.setEnd(sel.focusNode, sel.focusOffset);
+            var backwards = range.collapsed;
+            range.detach();
+
+            // modify() works on the focus of the selection
+            var endNode = sel.focusNode, endOffset = sel.focusOffset;
+            sel.collapse(sel.anchorNode, sel.anchorOffset);
+
+            var direction = [];
+            if (backwards) {
+                direction = ['backward', 'forward'];
+            } else {
+                direction = ['forward', 'backward'];
+            }
+
+            sel.modify("move", direction[0], "character");
+            sel.modify("move", direction[1], "word");
+            sel.extend(endNode, endOffset);
+            sel.modify("extend", direction[1], "character");
+            sel.modify("extend", direction[0], "word");
+        }
+    } else if ( (sel = document.selection) && sel.type != "Control") {
+        var textRange = sel.createRange();
+        if (textRange.text) {
+            textRange.expand("word");
+            // Move the end back to not include the word's trailing space(s),
+            // if necessary
+            while (/\s$/.test(textRange.text)) {
+                textRange.moveEnd("character", -1);
+            }
+            textRange.select();
+        }
+    }}
+</script>
+
+{% endblock %}
+
+{% block body %}
+
+	<h1>{{document}}</h1>
+	
+	<div id="document_body" contenteditable="false" onmouseup="snapSelectionToWord()">
+		{{document.body|linebreaksbr}}
+	</div>
+
+{% endblock %}
+

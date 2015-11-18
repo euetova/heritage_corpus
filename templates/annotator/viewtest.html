@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load dajaxice_templatetags %}
+{% load staticfiles %}
+{% load annotator_tags %}
+{% block title %}My amazing corpus Result{% endblock %}
+{% block meta_content %}Result{% endblock %}
+
+{% block scripts %}
+    {% dajaxice_js_import %}
+{% for i in j %}
+     <script>
+    {{ i|safe }}
+    </script>
+    {% endfor %}
+    <script>
+
+
+    $(document).ready(function(){
+        //$('.correct_sentence').each(function() {
+
+    //});
+    });
+
+    function calculate(){
+    Dajaxice.annotator.multiply(Dajax.process,{'a':$('#a').val(),'b':$('#b').val()})
+}
+    function get_ids(){
+        var arr = $.map($(".correct_sentence"), function(n, i){return n.id;});
+        arr.forEach(function(item, i, arr) {
+            update_corrections(item);
+        });
+    }
+
+    function update_corrections(num){
+        //alert(num);
+        Dajaxice.annotator.loadcorrections(Dajax.process,{'num': num});
+    }
+
+    </script>
+
+{% endblock %}
+    {% block upper-row %}
+            {% endblock %}
+
+    {% block other %}
+
+<script type="text/javascript">
+$(document).ready(function(){
+    //$('.token').tooltip({
+   // placement : 'top',
+    //  delay: { "show": 500, "hide": 0 },
+    //trigger: 'hover',
+   //   html: true
+ // });
+    setInterval ( "get_ids()", 500 );
+    $(".token[title*='bastard']").css( "text-decoration", "underline" );
+
+});
+</script>
+    {% endblock %}
+
+{% block content_header %}Annotate text{% endblock content_header %}
+{% block content %}
+    {% for doc, sents in data %}
+    <div class="row">
+      <div class="col-md-6">
+          <h2>
+        <span class="lead">Разметка текста:</span> <strong>{{doc}}</strong>
+    </h2>
+      </div>
+      <div class="col-md-6">
+      <div class="row">
+          <h2 align="right">
+          <div class="col-md-offset-4 col-md-3">
+              {% if doc.annotated %}
+                  {% if request.user|has_group:"STAFF"%}
+              {% if not doc.checked %}
+                  <form action="mark" method="POST">
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+                <button type="submit" class="btn btn-warning btn-sm" value="checked" name="mark">
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Checked
+                </button></form>
+              {% endif %}
+                      {% if doc.checked %}
+                  <form action="mark" method="POST">
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+                <button type="submit" class="btn btn-warning btn-sm" value="unchecked" name="mark">
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Not checked
+                </button></form>
+              {% endif %}
+                  {% endif %}
+          {% endif %}
+          </div>
+          <div class="col-md-3">
+              {% if not doc.annotated %}
+              <form action="mark" method="POST">
+              <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+                 <button type="submit" class="btn btn-warning btn-sm" value="annotated" name="mark">
+                  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> Annotated
+                </button>
+              </form></h2>
+      {% endif %}
+      {% if doc.annotated %}
+              <form action="mark" method="POST">
+              <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+                 <button type="submit" class="btn btn-warning btn-sm" value="unannotated" name="mark">
+                  <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> Not annotated
+                </button>
+              </form></h2>
+      {% endif %}
+      </div>
+
+      </div>
+      </div>
+
+	<div class="row">
+ <!--  <input type="text" value="5" id="a"> x
+<input type="text" value="6" id="b"> =
+<input type="text" value="" id="result">
+<input type="button" value="Multiply!" onclick="calculate();"> -->
+            {% for sent in sents %}
+                <span id="{{ sent.id }}" class="original_sentence" contenteditable="false">
+                    <!-- onmouseup="snapSelectionToWord() -->
+                    {{sent.tagged|safe|linebreaksbr}}
+                </span>
+                <span class="correct_sentence"  id = "{{ sent.id }}+" contenteditable="false"> <!-- onmouseup="snapSelectionToWord() -->
+                    {{sent.correct|safe|linebreaksbr}}
+                </span><br>
+                <span class="correct_sentence"  id = "{{ sent.id }}++" contenteditable="false"> <!-- onmouseup="snapSelectionToWord() -->
+                    {{sent.correct|safe|linebreaksbr}}
+                </span><br><br>
+            {% endfor %}
+    </div>
+{% endfor %}
+{% endblock %}
