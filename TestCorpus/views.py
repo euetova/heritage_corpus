@@ -80,14 +80,27 @@ class Search(Index):
                 jq, sent_list, word, res_docs = lex_search(query, subcorpus, flag)
 
             page = request.GET.get('page')
-            sents = pages(sent_list, page, per_page)
-            # if page:
-            #     start = page - 10 if page - 10 > 0 else 1
-            #     end = page + 10 if page + 10 <= sents.paginator.num_pages else sents.paginator.num_pages
-            # else:
-            #     start = 1
-            #     end = 11
-            # sents.paginator.page_range = range(start, end)
+            paginator = Paginator(sent_list, per_page)
+            jq_paginator = Paginator(jq, per_page)
+            if page:
+                page = int(page)
+                start = page - 10 if page > 10 else 1
+                end = page + 10 if page + 10 <= paginator.num_pages else paginator.num_pages
+            else:
+                start = 1
+                end = 11
+            paginator.page_range2 = range(start, end)
+            try:
+                sents = paginator.page(page)
+                jq = jq_paginator.page(page)
+            except PageNotAnInteger:
+                # If page is not an integer, deliver first page.
+                sents = paginator.page(1)
+                jq = jq_paginator.page(1)
+            except EmptyPage:
+                # If page is out of range (e.g. 9999), deliver last page of results.
+                sents = paginator.page(paginator.num_pages)
+                jq = jq_paginator.page(jq_paginator.num_pages)
             full_path = rePage.sub('', request.get_full_path())
             return render_to_response('result.html',
                                       {'query': word, 'result': sents,

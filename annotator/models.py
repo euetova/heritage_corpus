@@ -7,6 +7,8 @@ import uuid
 import json, codecs
 from utils import *
 regSpan= re.compile('<span class="token.*?</span>', flags=re.U | re.DOTALL)
+bold_regex = re.compile('/b\\[(\\d+)\\]')
+span_regex = re.compile('span\\[(\\d+)\\]')
 
 NativeChoices = ((u'eng', u'английский'), (u'nor', u'норвежский'), (u'kor', u'корейский'),
                  (u'ita', u'итальянский'), (u'fr', u'французский'), (u'ger', u'немецкий'),
@@ -199,6 +201,44 @@ class Annotation(models.Model):
 
         return d
 
+    def check_fields(self, start, end, startOffset, endOffset, quote, sent):
+        # print start, end, sent
+        q_enc = quote.encode('utf-8')
+        q_len = len(q_enc.split(' '))
+        # print (q_enc.split(' ')[-1])
+        if start != '':
+            start = bold_regex.sub('', start)
+            self.start = int(span_regex.search(start).group(1))
+            if end == "":  # /span[], ''
+                end = '/span['+str(self.start+q_len-1)+']'
+                endOffset = len(q_enc.split(' ')[-1].decode('utf-8').strip(' ,:;!?.'))
+                print (q_enc.split(' ')[-1]), endOffset
+            else:  # /span[], /span[]
+                end = bold_regex.sub('', end)
+            self.end = int(span_regex.search(end).group(1))
+        else:
+            if end != '':
+                end = bold_regex.sub('', end)
+                self.end = int(span_regex.search(end).group(1))
+                start = '/span['+str(self.end-q_len+1)+']'
+                startOffset = 0
+                self.start = int(span_regex.search(start).group(1))
+            else:
+                sent = Sentence.objects.get(id=sent).text.encode('utf-8')
+                # print sent
+                s = re.split(q_enc, sent)
+                for i in s: print i
+                part = len(re.split(q_enc, sent)[0].strip().split(' '))
+                self.start = part + 1
+                self.end = part + q_len
+                start = '/span['+str(self.start)+']'
+                startOffset = 0
+                end = '/span['+str(self.end)+']'
+                endOffset = len(q_enc.split(' ')[-1].decode('utf-8').strip(' ,:;!?.'))
+                # print (q_enc.split(' ')[-1]), endOffset
+        return start, end, startOffset, endOffset
+
+
     def update_from_json(self, new_data):
         d = json.loads(self.data)
 
@@ -208,13 +248,19 @@ class Annotation(models.Model):
 
                 # Put other fields into the data object.
             d[k] = v
-        d["ranges"][0]["start"] = re.sub('/b\\[(\\d+)\\]', '', d["ranges"][0]['start'])
-        d["ranges"][0]["end"] = re.sub('/b\\[(\\d+)\\]', '', d["ranges"][0]['end'])
 
+        quote = d['quote']
+        # print quote, len(d['quote'])
+        start, end, startOffset, endOffset = d["ranges"][0]["start"], d["ranges"][0]["end"], d["ranges"][0]["startOffset"], d["ranges"][0]["endOffset"]
+        start, end, startOffset, endOffset = self.check_fields(start, end, startOffset, endOffset, quote, self.document.id)
+        d["ranges"][0]["start"] = start
+        d["ranges"][0]["end"] = end
+        d["ranges"][0]["startOffset"] = startOffset
+        d["ranges"][0]["endOffset"] = endOffset
         self.data = json.dumps(d)
+        # print self.data
         self.tag = ', '.join(d["tags"])
-        self.start = int(re.search('span\\[(\\d+)\\]', d["ranges"][0]['start']).group(1))
-        self.end = int(re.search('span\\[(\\d+)\\]', d["ranges"][0]['end']).group(1))
+        # print self.start, self.end
 
     @staticmethod
     def as_list(qs=None, user=None):
