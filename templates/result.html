@@ -37,10 +37,11 @@ $(document).ready(function(){
     <ol start="{{ result.number|multiply:10 }}">
 
     {% for sent in result %}
-        <li><div class="doctitle">{{ sent.doc_id }}</div>
-            <span id="{{ sent.id }}" contenteditable="false"> <!-- onmouseup="snapSelectionToWord()"> -->
-                {{sent.tagged|safe|linebreaksbr}}
-            </span>
+        <li><div class="doctitle">{{ sent.doc_id }}
+        {% if request.user.is_authenticated %}#{{ sent.doc_id.id }}{% endif %}</div>
+            <span id="{{ sent.id }}" contenteditable="false">
+                {{sent.tagged|safe|linebreaksbr}} <button type="button" class="btn btn-xs" data-toggle="modal" data-target="#{{ sent.id }}expand"><-...-></button>
+            </span><br>
         <span class="correct_sentence" contenteditable="false"> <!-- onmouseup="snapSelectionToWord()"> -->
                 {{sent.correct|safe|linebreaksbr}}
             </span>
@@ -48,7 +49,26 @@ $(document).ready(function(){
 		{% endfor %}
     </ol>
 
+    {% for sent in result %}
+<div class="modal fade" id="{{ sent.id }}expand" tabindex="-1" role="dialog" aria-labelledby="expandLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="expandLabel">{{ sent.doc_id }}</h4>
+      </div>
+      <div class="modal-body">
 
+          <div class="row">
+              <div class="col-sm-12">
+              <p>{{sent.expand|safe|linebreaksbr}}</p>
+                  </div>
+			</div>
+          </div>
+</div>
+    </div>
+  </div>
+{% endfor %}
       <nav>
   <ul class="pagination pagination-sm">
        {% if result.has_previous %}
@@ -76,3 +96,4 @@ $(document).ready(function(){
   </ul>
 </nav>
 {% endblock content %}
+

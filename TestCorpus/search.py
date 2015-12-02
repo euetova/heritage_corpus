@@ -17,12 +17,26 @@ regSpans = re.compile('<span .*?</span>', flags=re.U | re.DOTALL)
 
 
 class ShowSentence:
-    def __init__(self, sent_id, num):
+    def __init__(self, sent_id, num, expand):
         k = Sentence.objects.get(pk=sent_id)
         self.tagged = self.bold(k.tagged, num)
         self.id = sent_id
         self.doc_id = k.doc_id
         self.correct = k.correct
+        self.expand = ''
+        for i in range(sent_id-expand, sent_id):
+            try:
+                sent = Sentence.objects.get(pk=i)
+                self.expand += sent.tagged + ' '
+            except:
+                pass
+        self.expand += self.tagged + ' '
+        for i in range(sent_id+1, sent_id+expand+1):
+            try:
+                sent = Sentence.objects.get(pk=i)
+                self.expand += sent.tagged + ' '
+            except:
+                pass
 
     def bold(self, tagged, num):
         s = regSpans.findall(tagged)
@@ -45,7 +59,7 @@ def get_subcorpus(query):
     mode = query.get(u'mode').encode('utf-8')
     if mode != u'any':
         req += 'AND mode="'+ mode +'" '
-    background = query.get(u'background')
+    background = query.get(u'background').encode('utf-8')
     if background != u'any':
         req += 'AND language_background="'+ background +'" '
     gender = query.get(u'gender').encode('utf-8')
@@ -87,7 +101,7 @@ def pages(sent_list, page, num):
         sents = paginator.page(paginator.num_pages)
     return sents
 
-def exact_search(word, docs, flag):
+def exact_search(word, docs, flag, expand):
     db = Database()
     # db.cur.execute('SELECT tok.sent_id, tok.doc_id, sent.text FROM `annotator_token` tok, `annotator_sentence` sent WHERE tok.token="дом" and tok.sent_id=sent.id;')
     req1 = 'SELECT COUNT(DISTINCT doc_id) FROM `annotator_token` WHERE token="'+word + '" '
@@ -103,14 +117,14 @@ def exact_search(word, docs, flag):
     for i, j in tokens:
         e[i].append(j)
     jq = []
-    sent_list = [ShowSentence(i, e[i]) for i in e]
+    sent_list = [ShowSentence(i, e[i], expand) for i in e]
     for sent in tokens:
         # sent.temp = bold(word, sent.tagged)
         # sent.save()
         jq.append(jquery.replace('***', str(sent[0])))
     return jq, sent_list, word, docs_len
 
-def lex_search(query, docs, flag):
+def lex_search(query, docs, flag, expand):
     # print query
     words = query.getlist(u'wordform[]')
     lexis = query.getlist(u'lex[]')
@@ -137,7 +151,7 @@ def lex_search(query, docs, flag):
         for i, j, k in rows:
             for n in range(j, k+1):
                 e[i].append(n)
-    sent_list = [ShowSentence(i, e[i]) for i in e]
+    sent_list = [ShowSentence(i, e[i], expand) for i in e]
     for sent in rows:
         jq.append(jquery.replace('***', str(sent[0])))
     word=' '.join(query.getlist(u'wordform[]'))
@@ -147,10 +161,14 @@ def lex_search(query, docs, flag):
 def collect_data(arr):
     word, lex, gram, err, docs, flag = arr
     if [word, lex, gram] == ["", "", ""] and err != '':
-        req = 'SELECT DISTINCT document_id, start, end FROM annotator_annotation WHERE 1 '
+        req = '''SELECT DISTINCT document_id, start, end FROM annotator_annotation
+                 LEFT JOIN annotator_sentence
+                 ON annotator_annotation.document_id = annotator_sentence.id WHERE 1 '''
         errs = [i for i in reg.split(err.lower()) if i != '']
         for er in errs:
             req += 'AND tag REGEXP "[[:<:]]' + er + '[[:>:]]" '
+        if flag:
+            req += 'AND doc_id_id IN ('+','.join(docs)+');'
     else:
         if err != '':
             req = '''SELECT DISTINCT sent_id, num FROM  annotator_token
@@ -176,8 +194,8 @@ def collect_data(arr):
             grams = [i for i in reg.split(gram) if i != '']
             for gr in grams:
                 req += 'AND gram LIKE "%' + gr + '%" '
-    if flag:
-        req += 'AND doc_id IN ('+','.join(docs)+');'
+        if flag:
+            req += 'AND doc_id IN ('+','.join(docs)+');'
     # f = codecs.open('s.txt', 'w')
     # f.write(req)
     # f.close()

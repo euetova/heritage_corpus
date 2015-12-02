@@ -69,15 +69,16 @@ class Search(Index):
                           'subcorpus_sents': subcorpus_sents,
                           'subcorpus_words': subcorpus_words}
             per_page = int(query.get(u'per_page'))
+            expand = int(query.get(u'expand')[-1])
             if query["exact_word"] != '':
-                jq, sent_list, word, res_docs = exact_search(request.GET["exact_word"].lower().encode('utf-8'), subcorpus, flag)
+                jq, sent_list, word, res_docs = exact_search(request.GET["exact_word"].lower().encode('utf-8'), subcorpus, flag, expand)
 
             else:
                 # QueryFormset = formset_factory(QueryForm)
                 # formset = QueryFormset(request.GET, request.FILES)
                 # if formset.is_valid():
                 # todo rewrite this part of search
-                jq, sent_list, word, res_docs = lex_search(query, subcorpus, flag)
+                jq, sent_list, word, res_docs = lex_search(query, subcorpus, flag, expand)
 
             page = request.GET.get('page')
             paginator = Paginator(sent_list, per_page)
@@ -135,6 +136,8 @@ class Statistics(Index):
                                                  'gender':gender,
                                                  'genres':genres,
                                                  'lb': lb,
-                                                 'native': native},
+                                                 'native': native,
+                                                 # 'request':request
+        },
                                   context_instance=RequestContext(request))
 # todo write login \ registration (if needed??)
