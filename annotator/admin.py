@@ -13,14 +13,14 @@ class LearnerCorpusAdminSite(AdminSite):
 class DocumentAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['owner', 'body', 'filename']}),
-        ('Author', {'fields': [('author', 'gender', 'course', 'language_background'), ('student_code', 'level', 'native')]}),
+        ('Author', {'fields': [('author', 'gender', 'course', 'language_background'), ('student_code', 'level', 'native'), ( 'fullmeta')]}),
         ('Date', {'fields': [('date1')]}),
         ('Text', {'fields': [('genre', 'text_type', 'annotation', 'time_limit', 'mode', 'subcorpus')]}),
         ('Autocompletion', {'fields': [('annotated', 'checked')], 'classes': [('collapse')]}),
     ]
 
-    list_display = ('title', 'subcorpus', 'author', 'gender', 'native', 'language_background', 'date_displayed', 'words', 'created', 'annotated', 'checked')
-    list_filter = ['gender', 'annotated', 'checked', 'subcorpus', 'native', 'language_background', 'course', 'genre']
+    list_display = ('title', 'subcorpus', 'author', 'gender', 'native', 'language_background', 'level', 'mode', 'created', 'annotated', 'checked', 'fullmeta')
+    list_filter = ['fullmeta', 'gender', 'annotated', 'checked', 'subcorpus', 'native', 'language_background', 'course', 'genre']
 
 
 class AnnotationAdmin(admin.ModelAdmin):

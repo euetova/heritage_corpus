@@ -39,6 +39,7 @@ class Document(models.Model):
     student_code = models.IntegerField(null=True, blank=True)
     time_limit = models.CharField(max_length=100, null=True, blank=True)
     native = models.CharField(max_length=10, null=True, blank=True, choices=NativeChoices, db_index=True)
+    fullmeta = models.BooleanField(null=True, blank=True)
 
     # needed for general corpus statictics
     words = models.IntegerField(editable=True, null=True, blank=True)

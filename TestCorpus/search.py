@@ -118,10 +118,10 @@ def exact_search(word, docs, flag, expand):
         e[i].append(j)
     jq = []
     sent_list = [ShowSentence(i, e[i], expand) for i in e]
-    for sent in tokens:
+    for sent in sent_list:
         # sent.temp = bold(word, sent.tagged)
         # sent.save()
-        jq.append(jquery.replace('***', str(sent[0])))
+        jq.append(jquery.replace('***', str(sent.id)))
     return jq, sent_list, word, docs_len
 
 def lex_search(query, docs, flag, expand):
@@ -144,27 +144,30 @@ def lex_search(query, docs, flag, expand):
     err = errs[wn].encode('utf-8')
     rows = collect_data([word, lex, gram, err, docs, flag])
     e = defaultdict(list)
-    if len(rows[0]) == 2:
-        for i, j in rows:
-            e[i].append(j)
-    else:
-        for i, j, k in rows:
-            for n in range(j, k+1):
-                e[i].append(n)
+    if rows:
+        if len(rows[0]) == 2:
+            for i, j in rows:
+                e[i].append(j)
+        else:
+            for i, j, k in rows:
+                for n in range(j, k+1):
+                    e[i].append(n)
     sent_list = [ShowSentence(i, e[i], expand) for i in e]
-    for sent in rows:
-        jq.append(jquery.replace('***', str(sent[0])))
+    for sent in sent_list:
+        jq.append(jquery.replace('***', str(sent.id)))
     word=' '.join(query.getlist(u'wordform[]'))
     return jq, sent_list, word, len(set([s.doc_id for s in sent_list]))
 
 
 def collect_data(arr):
     word, lex, gram, err, docs, flag = arr
+    if all(i=="" for i in [word, lex, gram, err]):
+        return []
     if [word, lex, gram] == ["", "", ""] and err != '':
         req = '''SELECT DISTINCT document_id, start, end FROM annotator_annotation
                  LEFT JOIN annotator_sentence
                  ON annotator_annotation.document_id = annotator_sentence.id WHERE 1 '''
-        errs = [i for i in reg.split(err.lower()) if i != '']
+        errs = [i for i in re.split(':?,|\\||\\(|\\)', err.lower()) if i != '']
         for er in errs:
             req += 'AND tag REGEXP "[[:<:]]' + er + '[[:>:]]" '
         if flag:
@@ -177,7 +180,7 @@ def collect_data(arr):
         LEFT JOIN annotator_annotation
         ON annotator_token.sent_id = annotator_annotation.document_id
         WHERE 1 '''
-            errs = [i for i in reg.split(err.lower()) if i != '']
+            errs = [i for i in re.split(':?,|\\||\\(|\\)', err.lower()) if i != '']
             for er in errs:
                 req += 'AND tag LIKE "%' + er + '%" '
             req += 'AND num>= annotator_annotation.start AND num <= annotator_annotation.end '
@@ -191,9 +194,7 @@ def collect_data(arr):
         if lex != '':
             req += 'AND lex LIKE "%' + lex + '%" '
         if gram != '':
-            grams = [i for i in reg.split(gram) if i != '']
-            for gr in grams:
-                req += 'AND gram LIKE "%' + gr + '%" '
+            req += parse_gram(gram)
         if flag:
             req += 'AND doc_id IN ('+','.join(docs)+');'
     # f = codecs.open('s.txt', 'w')
@@ -202,3 +203,14 @@ def collect_data(arr):
     db = Database()
     rows = db.execute(req)
     return rows
+
+def parse_gram(gram):
+    req = ''
+    arr = gram.split(',')
+    for gr in arr:
+        one = ['gram REGEXP "[[:<:]]' + i + '[[:>:]]"' for i in gr.replace(')', '').replace('(', '').split('|')]
+        if len(one) == 1:
+            req += 'AND '+ one[0] + ' '
+        else:
+            req += 'AND (' + ' OR '.join(one) + ') '
+    return req

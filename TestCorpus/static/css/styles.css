@@ -92,3 +92,7 @@ a:visited {
 .label a {
     color: #ffffff;
 }*/
+span.doctitle {
+    color: #777;
+    border-bottom: 1px dotted;
+}
