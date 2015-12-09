@@ -47,3 +47,8 @@ form .form-group {
     font-size: 80%;
     color: grey;
 }
+
+span.doctitle {
+    color: #777;
+    border-bottom: 1px dotted;
+}

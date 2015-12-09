@@ -1,7 +1,7 @@
 __author__ = 'elmira'
 
 import MySQLdb as mdb
-import codecs
+
 
 class Database(object):
     def __init__(self):

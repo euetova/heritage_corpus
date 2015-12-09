@@ -89,7 +89,7 @@ class Search(Index):
                 end = page + 10 if page + 10 <= paginator.num_pages else paginator.num_pages
             else:
                 start = 1
-                end = 11
+                end = 11 if paginator.num_pages > 10 else paginator.num_pages + 1
             paginator.page_range2 = range(start, end)
             try:
                 sents = paginator.page(page)

@@ -13,7 +13,7 @@ from django.db.models import Q
 jquery = """jQuery(function ($) {$('#***').annotator().annotator('addPlugin', 'Tags').annotator('addPlugin', 'Corr').annotator('addPlugin', 'Correction', 'Enter correct variant...').annotator('addPlugin', 'ReadOnlyAnnotations').annotator('addPlugin', 'Store', {prefix: '/heritage_corpus/document-annotations',annotationData: {'document': ***},loadFromSearch: {'document': ***}});});"""
 reg = re.compile(',| ')
 regToken= re.compile('">(.*?)</span>', flags=re.U | re.DOTALL)
-regSpans = re.compile('<span .*?</span>', flags=re.U | re.DOTALL)
+regSpans = re.compile('[.?,!:«(;#№–/...)»-]*<span .*?</span>[.?,!:«(;#№–/...)»-]*', flags=re.U | re.DOTALL)
 
 
 class ShowSentence:

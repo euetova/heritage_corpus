@@ -34,10 +34,38 @@ $(document).ready(function(){
      <h4><span  class="label label-default">Corpus total: {{ numbers.total_docs }} documents, {{ numbers.total_sents }} sentences, {{ numbers.total_tokens }} words.</span></h4>
     <h4><span  class="label label-default">Search executed in a user-defined subcorpus of {{ numbers.subcorpus_docs }} documents, {{ numbers.subcorpus_sents }} sentences, {{ numbers.subcorpus_words }} words.</span></h4>
     <h4><span  class="label label-default">Found: {{ total_docs }} documents, {{ total }} contexts.</span></h4>
+
+    <nav>
+  <ul class="pagination pagination-sm">
+       {% if result.has_previous %}
+           <li>
+      <a href="{{ path }}&page={{ result.previous_page_number }}" aria-label="Previous">
+        <span aria-hidden="true">предыдущая страница</span>
+      </a>
+    </li>
+            {% endif %}
+{% for i in result.paginator.page_range2 %}
+    <li
+    {% if result.number == i %}
+            class="active"
+            {% endif %}
+    ><a href="{{ path }}&page={{ i }}">{{ i }}</a></li>
+        {% endfor %}
+  {% if result.has_next %}
+      <li>
+      <a href="{{ path }}&page={{ result.next_page_number }}" aria-label="Next">
+        <span aria-hidden="true">следующая страница</span>
+      </a>
+    </li>
+            {% endif %}
+
+  </ul>
+</nav>
+
     <ol start="{{ result.number|multiply:10 }}">
 
     {% for sent in result %}
-        <li><div class="doctitle">{{ sent.doc_id }}
+        <li><div ><span class="doctitle">{{ sent.doc_id }}</span>
         {% if request.user.is_authenticated %}#{{ sent.doc_id.id }}{% endif %}</div>
             <span id="{{ sent.id }}" contenteditable="false">
                 {{sent.tagged|safe|linebreaksbr}} <button type="button" class="btn btn-xs" data-toggle="modal" data-target="#{{ sent.id }}expand"><-...-></button>
@@ -74,7 +102,7 @@ $(document).ready(function(){
        {% if result.has_previous %}
            <li>
       <a href="{{ path }}&page={{ result.previous_page_number }}" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
+        <span aria-hidden="true">предыдущая страница</span>
       </a>
     </li>
             {% endif %}
@@ -88,7 +116,7 @@ $(document).ready(function(){
   {% if result.has_next %}
       <li>
       <a href="{{ path }}&page={{ result.next_page_number }}" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
+        <span aria-hidden="true">следующая страница</span>
       </a>
     </li>
             {% endif %}
