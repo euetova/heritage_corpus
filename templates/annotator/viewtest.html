@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load dajaxice_templatetags %}
 {% load staticfiles %}
+{% load i18n %}
 {% load annotator_tags %}
 {% block title %}My amazing corpus Result{% endblock %}
 {% block meta_content %}Result{% endblock %}
@@ -132,4 +133,10 @@ $(document).ready(function(){
             {% endfor %}
     </div>
 {% endfor %}
+    <div class="btn-group" role="group">
+
+    <a class="btn btn-default btn-sm" href="/RLC/download_file/{{ doc_id }}/ann" role="button">Download annotation as csv</a>
+    <a class="btn btn-default  btn-sm" href="/RLC/download_file/{{ doc_id }}/tokens" role="button">Download text as csv</a>
+        <a class="btn btn-default  btn-sm" href="/RLC/download_file/{{ doc_id }}/text" role="button">{% trans 'Download plain text' %}</a>
+    </div>
 {% endblock %}

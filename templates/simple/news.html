@@ -1,29 +1,22 @@
 {% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans 'Russian Learner Corpus News' %}{% endblock %}
+{% block meta_content %}{% trans 'News' %}{% endblock %}
 
-{% block title %}Russian Learner Corpus News{% endblock %}
-{% block meta_content %}News{% endblock %}
-
-{% block content_header %}News{% endblock content_header %}
+{% block content_header %}{% trans 'News' %}{% endblock content_header %}
 {% block top-name %}
-          News
+          {% trans 'News' %}
           {% endblock %}
 {% block well %}{% endblock %}
 {% block content %}
-    <strong>November 12, 2014</strong>
-<p>The Corpus now has a new logo. The CoRST team thanks Alexandra Kozhukhar, 4th year NRU HSE student, for the beautiful graphic design. </p>
-
-<strong>November&nbsp;4,&nbsp;2014</strong>
-<p>Texts with error markup are uploaded to the corpus. More than 5&nbsp;500 errors are annotated.</p>
-
-<strong>October 27, 2014</strong>
-<p>Corpus updated &mdash; added about 300 000 tokens. The size of the corpus is more than 2.5 million tokens. </p>
-
-<strong>September 14, 2014</strong>
-<p>The Corpus is given a new name: Corpus of Russian Student Texts. New link &mdash; <a href="http://web-corpora.net/CoRST/search/" target="_blank" onClick="1">web-corpora.net/CoRST/</a></p>
-
-<strong>July 9, 2014</strong>
-<p>Corpus updated &mdash; added about 420 000 tokens. </p>
-
-
+   {% for article in articles %}
+     <strong>{{ article.date }}</strong>
+       {% if LANGUAGE_CODE == 'ru' %}
+    <p>{{ article.text_rus }} </p>
+       {% endif %}
+       {% if LANGUAGE_CODE == 'en' %}
+    <p>{{ article.text_eng }} </p>
+       {% endif %}
+    {% endfor %}
 
 {% endblock content %}

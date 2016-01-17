@@ -25,7 +25,7 @@ class Sent:
 
 
 def mystem(text):
-    fname = 'temp' + str(uuid.uuid4()) + '.txt'
+    fname = '/home/elmira/heritage_corpus/tempfiles/temp' + str(uuid.uuid4()) + '.txt'
     f = codecs.open(fname, 'w', 'utf-8')
     f.write(text.replace('\r\n', '\r').replace('\n', '\r'))
     f.close()

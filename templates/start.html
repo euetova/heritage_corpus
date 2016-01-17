@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
+{% load i18n %}
 {% block links %}
           <link href="{% static "css/style.css" %}" rel="stylesheet">
     <link href="{% static "css/styles.css" %}" rel="stylesheet">
@@ -9,12 +10,12 @@
   <div class="container">
       <div class="row">
         <div class="col-md-7">
-          <h1 id="top">RLC
-            <p class="lead">Russian Learner Corpus</p>
+          <h1 id="top">{% trans "RLC" %}
+            <p class="lead">{% trans "Russian Learner Corpus" %}</p>
           </h1>
         </div>
         <div class="col-md-5">
-        	      	<img align="right" src="{% static "img/placeholder.png" %}" class="img-responsive">
+{#        	      	<img align="right" src="{% static "img/placeholder.png" %}" class="img-responsive">#}
 
         </div>
       </div>
@@ -29,99 +30,41 @@
       <!--left-->
       <div class="col-md-3" id="leftCol">
         <ul class="nav nav-stacked" id="sidebar">
-          <li><a href="#sec0">About</a></li>
-          <li><a href="#sec1">What is RLC?</a></li>
-          <li><a href="#sec2">Metadata</a></li>
-          <li><a href="#sec3">Using RLC</a>
-            <li><a href="#sec5">Sponsors</a></li>
-            <li><a href="#sec6">Partners</a></li>
-            <li><a href="#sec7">Our team</a></li>
-            <li><a href="#sec4">Links</a></li>
-            <li><a href="#top">Back to top</a></li>
+        {% if LANGUAGE_CODE == 'ru' %}
+            {% for section in sections %}
+          <li><a href="#sec{{ section.number }}">{{ section.header_rus }}</a></li>
+            {% endfor %}
+        {% endif %}
+        {% if LANGUAGE_CODE == 'en' %}
+            {% for section in sections %}
+          <li><a href="#sec{{ section.number }}">{{ section.header_eng }}</a></li>
+            {% endfor %}
+        {% endif %}
+
+            <li><a href="#top">{% trans "Back to top" %}</a></li>
+
         </ul>
       </div><!--/left-->
 
       <!--right-->
       <div class="col-md-9">
-          <hr id="sec0">
-        <h2 >About</h2>
-        <p>The Russian Learner Corpus (RLC) comprises texts produced by two categories of non-standard speakers of Russian: learners of Russian as a Foreign language and speakers of Heritage Russian. The corpus contains both oral and written production and enables search by morphological properties and a variety of deviations from Standard Russian ranging from mistakes in orthography and grammar to non-standard use of lexical and syntactic constructions.</p>
+          {% if LANGUAGE_CODE == 'ru' %}
+            {% for section in sections %}
+                <hr id="sec{{ section.number }}">
+        <h2 >{{ section.header_rus }}</h2>
+        {{ section.text_rus|safe }}
+            {% endfor %}
+        {% endif %}
+        {% if LANGUAGE_CODE == 'en' %}
+            {% for section in sections %}
+          <hr id="sec{{ section.number }}">
+        <h2 >{{ section.header_eng }}</h2>
+        {{ section.text_eng|safe }}
+            {% endfor %}
+        {% endif %}
 
-          <hr id="sec1">
-        <h2 >What is RLC?</h2>
-        <p>The texts for the Corpus were kindly provided by researchers and teachers from Russia and the USA: the Polinsky Language Sciences Lab, Evgeny Dengub, Irina Dubinina, Anna Mikhaylova, Alla Smyslova, the Center of Russian as a Foreign Language at the Higher School of Economics.</p>
-<p>Data on Heritage Russian oral production include the results of experimental studies: frog stories (based on the methodology developed by Berman & Slobin 1994; Slobin 2004) and narratives based on a short cartoon (“Nu pogodi!”) (see Isurin & Ivanova-Sullivan (2008) and Polinsky (2008) for more details).</p>
-<p>Part of RLC is <a href='/heritage_corpus/rulec'>RULEC</a> – a longitudinal subcorpus of Academic Writing collected by Olessya Kisselev and Anna Alsufieva of Portland State University.</p>
-<p>The preliminary linguistic analysis and tagging were done by the members of the Heritage Russian Research Group (Higher School of Economics), with technical support provided by Timofey Arkhangelsky and Elmira Mustakimova.
-</p>
-
-        <hr id="sec2">
 
 
-        <h2 >Metadata</h2>
-        <p>Each text in the Corpus is assigned background information.  </p>
-<div class="row">
-          <div class="col-md-6">
-            <div class="panel panel-default">
-              <div class="panel-heading"><h4>Mandatory fields</h4></div>
-              <div class="panel-body">
-                  <ul>
-                      <li>Oral / Written</li>
-                      <li>Author’s gender</li>
-                      <li>Author’s language background (Heritage / L2)</li>
-                      <li>Author’s dominant language</li>
-                      <li>Author’s proficiency in Russian</li>
-                  </ul>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="panel panel-default">
-              <div class="panel-heading"><h4>Optional Fields</h4></div>
-              <div class="panel-body">
-                  <ul>
-                      <li>Date</li>
-                      <li>Genre</li>
-                      <br/><br/><br/>
-                  </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-<p>A more elaborated system of text marking is used in <a href='/heritage_corpus/rulec'>RULEC</a>.</p>
-
-        <hr id="sec3">
-
-        <h2 >Using RLC</h2>
-        <p>Comprising texts from two different groups of non-sandard speakers of Russian, RLC is a valuable source for various studies in the fields of  Second Language Acquisition, Second Language teaching, language interference and theoretical linguistics. </p>
-<p>Corpus data and its flexible search system provide a sound basis for comparative research in Heritage and L2 production and enables a deeper insight into complicated phenomena, such as non-standard use of Russian aspect, cases, prepositional phrases, as well as lexical and semantic misuse in multi-word constructions.</p>
-<p>Apart from telling a lot about non-standard Russian, RLC is a powerful tool for opening new facets of Standard Russian grammar: deviations in language use help uncover subtle rules that previously have been paid no attention to.
-</p>
-
-          <hr id="sec5">
-        <h2>Sponsors</h2>
-        <p>Put some text here</p>
-
-        <hr id="sec6">
-        <h2>Partners</h2>
-        <p>Put some text here</p>
-
-        <hr id="sec7">
-        <h2>Our team</h2>
-        <p>Put some text here</p>
-
-        <hr id="sec4">
-
-          <h2 >Links</h2>
-          <ul>
-<li><a href='http://www.ruscorpora.ru/en/corpora-intro.html' target='_blank'>What is the Corpus?</a> - see the introduction page on the website of Russian National Corpus</li>
-<li>Learner corpora</li>
-<ul><li><a href='http://web-corpora.net/RussianLearnerCorpus/search/' target='_blank'>Russian Learner Corpus </a></li>
-
-<li><a href='http://rus-ltc.org/' target='_blank'>Russian Learner Translator Corpus</a></li>
-
-<li><a href='http://realec.org/' target='_blank'>Russian Error-Annotated Learner English Corpus </a></li></ul>
-</ul>
 
         </div><!--/right-->
   	</div><!--/row-->

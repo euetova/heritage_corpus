@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-
+{% load i18n %}
+{% get_language_info for LANGUAGE_CODE as lang %}
 {% block title %}
-   Russian Learner Corpus Statistics
+   {% trans 'Russian Learner Corpus Statistics' %}
 
 {% endblock %}
 {% block meta_content %}
-    Statistics
+    {% trans 'Statistics' %}
 {% endblock %}
 
 {% block upper-row %}
@@ -13,8 +14,8 @@
   <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <h2 id="top">Statistics
-            <p class="lead">Russian Learner Corpus</p>
+          <h2 id="top">{% trans 'Statistics' %}
+            <p class="lead">{% trans 'Russian Learner Corpus' %}</p>
           </h2>
         </div>
       </div>
@@ -26,6 +27,7 @@
 {% block content %}
 
     {% if request.user.is_authenticated %}
+
     <div class="row">
      Annotated {{ progress.0 }} documents
     <div class="progress">
@@ -42,31 +44,31 @@
     </div>
     {% endif%}
     <div class="col-md-4">
-    <h2>Raw counts</h2>
+    <h2>{% trans 'Raw counts' %}</h2>
 <table class="table table-condensed table-hover table-bordered">
   <tr>
-      <td>Number of texts</td>
+      <td>{% trans 'Number of texts' %}</td>
       <td>{{ docs }}</td>
   </tr>
     <tr>
-      <td>Number of words</td>
+      <td>{% trans 'Number of words' %}</td>
       <td>{{ words }}</td>
   </tr>
     <tr>
-      <td>Number of sentences</td>
+      <td>{% trans 'Number of sentences' %}</td>
       <td>{{ sents }}</td>
   </tr>
     <tr>
-      <td>Number of annotations</td>
+      <td>{% trans 'Number of annotations' %}</td>
       <td>{{ annot }}</td>
   </tr>
 </table>
-<h2>Gender counts</h2>
+<h2>{% trans 'Gender counts' %}</h2>
     <table class="table table-condensed table-hover table-bordered">
     {% for key, value in gender.iteritems %}
         <tr>
       {% if key == '' %}
-            <td>unknown </td>
+            <td>{% trans 'unknown' %} </td>
         {% endif %}
         {% if key != '' %}
             <td>{{ key }} </td>
@@ -79,12 +81,12 @@
     </div>
 
      <div class="col-md-4">
-    <h2>Genre counts</h2>
+    <h2>{% trans 'Genre counts' %}</h2>
     <table class="table table-condensed table-hover table-bordered">
     {% for key, value in genres.iteritems %}
         <tr>
         {% if key == '' %}
-            <td>unknown </td>
+            <td>{% trans 'unknown' %} </td>
         {% endif %}
         {% if key != '' %}
             <td>{{ key }} </td>
@@ -98,12 +100,12 @@
 </div>
 
     <div class="col-md-4">
-        <h2>Language background</h2>
+        <h2>{% trans 'Language background' %}</h2>
     <table class="table table-condensed table-hover table-bordered">
     {% for key, value in lb.iteritems %}
         <tr>
         {% if key == '' %}
-            <td>unknown </td>
+            <td>{% trans 'unknown' %} </td>
         {% endif %}
         {% if key != '' %}
             <td>{{ key }} </td>
@@ -113,12 +115,12 @@
  {% endfor %}
 </table>
 
-      <h2>Native language</h2>
+      <h2>{% trans 'Native language' %}</h2>
     <table class="table table-condensed table-hover table-bordered">
     {% for key, value in native.iteritems %}
         <tr>
         {% if key == '' %}
-            <td>unknown </td>
+            <td>{% trans 'unknown' %} </td>
         {% endif %}
         {% if key != '' %}
             <td>{{ key }} </td>

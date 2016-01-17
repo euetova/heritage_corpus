@@ -1,3 +1,5 @@
+#!/usr/bin/python
+#  -- coding: utf8 --
 """
 Django settings for learner_corpus project.
 
@@ -10,6 +12,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from django.utils.translation import ugettext_lazy as _
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -38,18 +41,20 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'dajaxice',
     'TestCorpus',
-    'annotator'
+    'annotator',
+    'news'
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'django.middleware.locale.LocaleMiddleware',
+
 )
 
 ROOT_URLCONF = 'heritage_corpus.urls'
@@ -83,6 +88,11 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
+LANGUAGES = (
+    ('ru', _('Russian')),
+    ('en', _('English')),
+)
+
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
@@ -97,6 +107,7 @@ USE_TZ = True
 
 STATIC_URL = '/RLC/static/'
 STATIC_ROOT = os.path.dirname(BASE_DIR) + '/public/static/'
+MEDIA_ROOT = os.path.dirname(BASE_DIR) + '/public/media/'
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -121,4 +132,8 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
     'django.template.loaders.eggs.Loader',
+)
+
+LOCALE_PATHS = (
+    '/home/elmira/heritage_corpus/locale',
 )

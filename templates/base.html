@@ -9,14 +9,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
-     <meta name="title" content="{% block meta_content %}Russian Learner Corpus{% endblock %}">
+     <meta name="title" content="{% block meta_content %}{% trans "Russian Learner Corpus"%}{% endblock %}">
      <meta name="robots" content="index,all">
      <meta name="resourse-type" content="document">
      <meta name="document-state" content="dynamic">
     {% endblock %}
 
     <title>
-        {% block title %}RLC: Russian Learner Corpus{% endblock %}
+        {% block title %}{% trans "RLC: Russian Learner Corpus"%}{% endblock %}
     </title>
 
      <!-- Bootstrap-->
@@ -152,27 +152,28 @@ $(document).on('click','.navbar-toggle',function(e) {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a href="/heritage_corpus/" class="navbar-brand">RLC</a>
+      <a href="/heritage_corpus/" class="navbar-brand">{% trans "RLC"%}</a>
     </div>
       {% block navbarline %}
     <nav class="collapse navbar-collapse" role="navigation">
       <ul class="nav navbar-nav">
         <li>
-          <a href="/heritage_corpus/">Main</a>
+          <a href="/heritage_corpus/">{% trans "Main"%}</a>
         </li>
         <li>
-          <a href="/heritage_corpus/search">Search</a>
+          <a href="/heritage_corpus/search">{% trans "Search"%}</a>
         </li>
           <li>
-          <a href="/heritage_corpus/news">News</a>
+          <a href="/heritage_corpus/news">{% trans "News"%}</a>
         </li>
         <li>
-          <a href="/heritage_corpus/help">Help</a>
+          <a href="/heritage_corpus/help">{% trans "Help"%}</a>
         </li>
         <li>
-          <a href="/heritage_corpus/stats">Statistics</a>
+          <a href="/heritage_corpus/stats">{% trans "Statistics"%}</a>
         </li>
       </ul>
+
         {% if user.is_active and user.is_staff %}
             <ul class="nav navbar-nav navbar-right">
         <li >{% block welcome-msg %}
@@ -182,11 +183,11 @@ $(document).on('click','.navbar-toggle',function(e) {
                 <strong>{% firstof user.get_short_name user.get_username %}</strong>.
             {% endblock %}</a>
         </li>
+            <li><a href="{% url 'admin:index' %}">{% trans 'Admin panel' %}</a></li>
+            <li><a href="{% url 'annotator.root' %}">{% trans 'Annotate' %}</a></li>
             <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Actions <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% trans 'Actions' %}<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
-          <li><a href="{% url 'admin:index' %}">Admin panel</a></li>
-          <li><a href="{% url 'annotator.root' %}">Annotate</a></li>
               {% block userlinks %}
                 {% url 'django-admindocs-docroot' as docsroot %}
                 {% if docsroot %}
@@ -207,21 +208,29 @@ $(document).on('click','.navbar-toggle',function(e) {
         {% endif %}
     {% if not user.is_authenticated %}
         <ul class="nav navbar-nav navbar-right">
-        <li><a href="/heritage_corpus/admin/login/?next={{ request.get_full_path }}">Log in</a></li>
+        <li><a href="/heritage_corpus/admin/login/?next={{ request.get_full_path }}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
         </ul>
-        <!--
-        <form class="navbar-form navbar-right" role="form" method="post" action="???">
-            {% csrf_token %}
-            <div class="form-group">
-                <input type="text" class="form-control input-sm" name="username" placeholder="Username">
-            </div>
-            <div class="form-group">
-                <input type="password" class="form-control input-sm" name="password" placeholder="Password">
-            </div>
-            <input type="hidden" name="next" value="{{ request.get_full_path }}" />
-            <button type="submit" class="btn btn-sm btn-default">Sign In</button>
-        </form> -->
     {% endif %}
+    <ul class="nav navbar-nav navbar-right">
+        <li>
+                <form class="form-inline" action="{% url 'set_language' %}" method="post" style="padding-top: 15px">
+{% csrf_token %}
+                <div class="input-group">
+      <input name="next" type="hidden" value="{{ redirect_to }}" />
+                    <select class="form-control input-sm" name="language">
+{% get_language_info_list for LANGUAGES as languages %}
+{% for language in languages %}
+<option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected="selected"{% endif %}>{{ language.code }}
+</option>
+{% endfor %}
+</select>
+      <span class="input-group-btn">
+         <button type="submit" class="btn btn-secondary btn-sm"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+      </span>
+    </div>
+
+</form></li>
+    </ul>
     </nav>
       {% endblock %}
   </div>
@@ -234,9 +243,9 @@ $(document).on('click','.navbar-toggle',function(e) {
       <div class="row">
         <div class="col-md-7">
           <h1 id="top">{% block top-name %}
-          RLC
+          {% trans "RLC"%}
           {% endblock %}
-            <p class="lead">Russian Learner Corpus</p>
+            <p class="lead">{% trans "Russian Learner Corpus"%}</p>
           </h1>
         </div>
         <div class="col-md-5">
@@ -268,26 +277,26 @@ $(document).on('click','.navbar-toggle',function(e) {
       <!--left-->
       <div class="col-md-3" id="leftCol">
         <ul class="nav nav-stacked" id="sidebar">
-          <li><a href="#sec0">About</a></li>
+          <li><a href="#sec0">{% trans "About"%}</a></li>
         </ul>
       </div><!--/left-->
 
       <!--right-->
       <div class="col-md-9">
           <hr id="sec0">
-        <h2 >About</h2>
+        <h2 >{% trans "About"%}</h2>
         <p>Corpus of Russian Student Texts (CoRST) is a collection of Russian texts written by students of different universities. Currently, the size of the corpus is about 2.5 million tokens. The texts are annotated in several  ways (metatextual annotation, morphological annotation and error markup), which enables users to perform many types of search in the corpus.</p>
 <p>The corpus was created on the platform of the Eastern Armenian National Corpus (<a href="http://eanc.net/" target="_blank">EANC</a>); to learn more about how to use the corpus and the search request language, please, consult the <a href="http://eanc.net/en/help/" target="_blank" >help page</a> of EANC.</p>
 <p>Corpus of Russian Student Texts is a comprehensive reference system intended for researchers, teachers, students, as well as everyone interested in the problems of modern Russian grammar, current processes in lexis, morphology and syntax of modern Russian.</p>
 
           <hr id="sec1">
-
+</div>
     {% endblock content%}
-</div><!--/container-->
+</div></div><!--/container-->
 
       <footer class="footer">
       <div class="container">
-          <p class="navbar-text navbar-left text-muted">{% block footer %} Department of Linguistics NRU HSE 2015 (c) {% endblock footer %}</p>
+          <p class="navbar-text navbar-left text-muted">{% block footer %} {% trans "School of Linguistics NRU HSE"%} 2016 <span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span>{% endblock footer %}</p>
       </div>
 
     </footer>

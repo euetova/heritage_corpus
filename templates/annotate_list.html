@@ -72,7 +72,7 @@
         <a href=".toggle-folder-2" data-toggle="collapse"  class="label label-warning">
           RULEC
         </a>
-        <ul class="toggle-folder-2 collapse in list-unstyled">
+        <ol class="toggle-folder-2 collapse in">
             {% for doc in docs %}
                 {% if not doc.annotated %}
                     {% if doc.subcorpus == 'RULEC' %}
@@ -82,11 +82,11 @@
                 {% endif %}
                 {% endif %}
         {% endfor %}
-        </ul>
+        </ol>
       <br><a href=".toggle-folder-3" data-toggle="collapse"  class="label label-warning">
           HSE
         </a>
-        <ul class="toggle-folder-3 collapse in list-unstyled">
+        <ol class="toggle-folder-3 collapse in">
             {% for doc in docs %}
                 {% if not doc.annotated %}
                    {% if doc.subcorpus == 'HSE' %}
@@ -96,8 +96,8 @@
                 {% endif %}
                 {% endif %}
         {% endfor %}
-        </ul>
-        <ul class="list-unstyled">
+        </ol>
+        <ol>
             {% for doc in docs %}
                 {% if not doc.annotated %}
                    {% if doc.subcorpus == '' %}
@@ -107,7 +107,7 @@
                 {% endif %}
                 {% endif %}
         {% endfor %}
-        </ul>
+        </ol>
       </div>
 
       </div>
@@ -121,7 +121,7 @@
             <a href=".toggle-folder-2-1" data-toggle="collapse" class="label label-warning">
               RULEC
             </a>
-            <ul class="toggle-folder-2-1 collapse in list-unstyled">
+            <ol class="toggle-folder-2-1 collapse in">
               <!--<li> folder item 21</li>-->
               <!--</li> folder item 22</li>-->
                 {% for doc in docs %}
@@ -132,11 +132,11 @@
                         </li>
                     {% endif %}{% endif %}
                 {% endfor %}
-            </ul>
+            </ol>
           <br><a href=".toggle-folder-2-2" data-toggle="collapse" class="label label-warning">
               HSE
             </a>
-            <ul class="toggle-folder-2-2 collapse in list-unstyled">
+            <ol class="toggle-folder-2-2 collapse in">
               <!--<li> folder item 21</li>-->
               <!--</li> folder item 22</li>-->
                 {% for doc in docs %}
@@ -147,8 +147,8 @@
                         </li>
                     {% endif %}{% endif %}
                 {% endfor %}
-            </ul>
-          <ul class="list-unstyled">
+            </ol>
+          <ol>
               <!--<li> folder item 21</li>-->
               <!--</li> folder item 22</li>-->
                 {% for doc in docs %}
@@ -159,7 +159,7 @@
                         </li>
                     {% endif %}{% endif %}
                 {% endfor %}
-            </ul>
+            </ol>
           </div>
 
       </div>
@@ -169,7 +169,7 @@
 <div class="panel panel-primary">
     <div class="panel-heading">Annotated, checked</div>
       <div class="panel-body" style="min-height: 450px; max-height: 450px; overflow-y: scroll;">
-          <ul class="list-unstyled">
+          <ol>
     {% for doc in docs %}
         {% if doc.checked %}
     <li>
@@ -177,7 +177,7 @@
     </li>
         {% endif %}
     {% endfor %}
-    </ul>
+    </ol>
       </div>
 </div>
 </div>

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block title %}
-    Russian Learner Corpus Help
+    {% trans 'Russian Learner Corpus Help' %}
 
 {% endblock %}
 {% block meta_content %}
-    Help
+    {% trans 'Help' %}
 {% endblock %}
 
 {% block upper-row %}
@@ -13,11 +13,13 @@
   <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <h1 id="top">Help
-            <p class="lead">Russian Learner Corpus</p>
+          <h1 id="top">{% trans 'Help' %}
+            <p class="lead">{% trans 'Russian Learner Corpus' %}</p>
           </h1>
         </div>
       </div>
+
+
 
   </div><!--/container-->
 </div><!--/masthead-->
@@ -25,7 +27,30 @@
 
 {% block content %}
 
-    This is help page.
+    <div class="panel panel-default">
+      <div class="panel-heading">{% trans 'Как искать в корпусе' %}</div>
+      <div class="panel-body">
 
+      </div>
+    </div>
+
+{% if request.user.is_authenticated %}
+    <div class="panel panel-default">
+      <div class="panel-heading">{% trans 'Как размечать в корпусе' %}</div>
+      <div class="panel-body">
+        <ol>
+            <li>{% trans 'Как добавлять тексты' %}</li>
+            <li>{% trans 'Метаразметка' %}</li>
+            <li>{% trans 'Разметка ошибок' %}</li>
+            <li>{% trans 'Тэги ошибок' %}</li>
+            <li>..</li>
+        </ol>
+      </div>
+    </div>
+    {% endif %}
+
+{% if not request.user.is_authenticated %}
+    <div class="well well-sm"><small>{% trans 'Чтобы получить доступ к <mark>инструкции по разметке в корпусе</mark>, войдите в систему, используя ваш логин и пароль.' %}</small></div>
+    {% endif %}
 
 {% endblock content %}

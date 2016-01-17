@@ -101,17 +101,25 @@ def pages(sent_list, page, num):
         sents = paginator.page(paginator.num_pages)
     return sents
 
-def exact_search(word, docs, flag, expand):
+
+def exact_search(word, docs, flag, expand, page, per_page):
     db = Database()
     # db.cur.execute('SELECT tok.sent_id, tok.doc_id, sent.text FROM `annotator_token` tok, `annotator_sentence` sent WHERE tok.token="дом" and tok.sent_id=sent.id;')
     req1 = 'SELECT COUNT(DISTINCT doc_id) FROM `annotator_token` WHERE token="'+word + '" '
     if flag:
         req1 += 'AND doc_id IN ('+','.join(docs) + ');'
     docs_len = int(db.execute(req1)[0][0])
-    req2 = 'SELECT sent_id, num FROM `annotator_token` WHERE token="'+ word +'" '
+    n_req = 'SELECT COUNT(DISTINCT sent_id) FROM `annotator_token` WHERE token="'+ word +'" '
     if flag:
-        req2 += 'AND doc_id IN ('+','.join(docs) + ');'
-    tokens = db.execute(req2)
+        n_req += 'AND doc_id IN ('+','.join(docs) + ');'
+    sent_num = int(db.execute(n_req)[0][0])
+    req2 = 'SELECT DISTINCT sent_id FROM `annotator_token` WHERE token="'+ word +'" '
+    if flag:
+        req2 += 'AND doc_id IN ('+','.join(docs) + ')'
+    req2 += ' LIMIT %d,%d;' %((page - 1)*per_page, per_page)
+    sentences = '(' + ', '.join([str(i[0]) for i in db.execute(req2)]) + ')'
+    req3 = 'SELECT sent_id, num FROM `annotator_token` WHERE token="'+ word +'" AND sent_id IN ' + sentences
+    tokens = db.execute(req3)
     # tokens = Token.objects.filter(token__exact=word)
     e = defaultdict(list)
     for i, j in tokens:
@@ -122,9 +130,9 @@ def exact_search(word, docs, flag, expand):
         # sent.temp = bold(word, sent.tagged)
         # sent.save()
         jq.append(jquery.replace('***', str(sent.id)))
-    return jq, sent_list, word, docs_len
+    return jq, sent_list, word, docs_len, sent_num
 
-def lex_search(query, docs, flag, expand):
+def lex_search(query, docs, flag, expand, page, per_page):
     # print query
     words = query.getlist(u'wordform[]')
     lexis = query.getlist(u'lex[]')
@@ -142,7 +150,7 @@ def lex_search(query, docs, flag, expand):
     lex = lexis[wn].encode('utf-8')
     gram = grams[wn].encode('utf-8')
     err = errs[wn].encode('utf-8')
-    rows = collect_data([word, lex, gram, err, docs, flag])
+    rows, sent_num, d_num = collect_data([word, lex, gram, err, docs, flag, page, per_page])
     e = defaultdict(list)
     if rows:
         if len(rows[0]) == 2:
@@ -156,61 +164,238 @@ def lex_search(query, docs, flag, expand):
     for sent in sent_list:
         jq.append(jquery.replace('***', str(sent.id)))
     word=' '.join(query.getlist(u'wordform[]'))
-    return jq, sent_list, word, len(set([s.doc_id for s in sent_list]))
+    return jq, sent_list, ' '.join([word, lex, gram, err]), d_num, sent_num
 
 
 def collect_data(arr):
-    word, lex, gram, err, docs, flag = arr
-    if all(i=="" for i in [word, lex, gram, err]):
+    db = Database()
+    word, lex, gram, err, docs, flag, page, per_page = arr
+    err = err.strip()
+    s = bincode(word, lex, gram, err)
+    if s == '0000':
         return []
-    if [word, lex, gram] == ["", "", ""] and err != '':
-        req = '''SELECT DISTINCT document_id, start, end FROM annotator_annotation
+    elif s == '0001':
+        req_template = ''' FROM annotator_annotation
                  LEFT JOIN annotator_sentence
                  ON annotator_annotation.document_id = annotator_sentence.id WHERE 1 '''
-        errs = [i for i in re.split(':?,|\\||\\(|\\)', err.lower()) if i != '']
-        for er in errs:
-            req += 'AND tag REGEXP "[[:<:]]' + er + '[[:>:]]" '
+        req_template += parse_gram(err, 'tag')
         if flag:
-            req += 'AND doc_id_id IN ('+','.join(docs)+');'
-    else:
-        if err != '':
-            req = '''SELECT DISTINCT sent_id, num FROM  annotator_token
+            req_template += 'AND doc_id_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT document_id)''' + req_template
+        req1 = 'SELECT DISTINCT document_id' + req_template
+        req = 'SELECT DISTINCT document_id, start, end' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id_id)''' + req_template
+    elif s == '0010':
+        req_template = ''' FROM  annotator_morphology
+        LEFT JOIN annotator_token
+        ON annotator_token.id = annotator_morphology.token_id
+        WHERE 1 '''+ parse_gram(gram, 'gram')
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    elif s == '0011':
+        req_template = ''' FROM  annotator_token
         LEFT JOIN annotator_morphology
         ON annotator_token.id = annotator_morphology.token_id
         LEFT JOIN annotator_annotation
         ON annotator_token.sent_id = annotator_annotation.document_id
-        WHERE 1 '''
-            errs = [i for i in re.split(':?,|\\||\\(|\\)', err.lower()) if i != '']
-            for er in errs:
-                req += 'AND tag LIKE "%' + er + '%" '
-            req += 'AND num>= annotator_annotation.start AND num <= annotator_annotation.end '
-        else:
-            req = '''SELECT DISTINCT sent_id, num FROM  annotator_token
-        LEFT JOIN annotator_morphology
+        WHERE 1 %s AND num>= annotator_annotation.start AND num <= annotator_annotation.end %s''' %(parse_gram(err, 'tag'), parse_gram(gram, 'gram'))
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    elif s == '0100':
+        req_template = ''' FROM  annotator_morphology
+        LEFT JOIN annotator_token
         ON annotator_token.id = annotator_morphology.token_id
         WHERE 1 '''
-        if word != '':
-            req += 'AND lem="'+word+'" '
-        if lex != '':
-            req += 'AND lex LIKE "%' + lex + '%" '
-        if gram != '':
-            req += parse_gram(gram)
+        req_template += parse_lex(lex)
         if flag:
-            req += 'AND doc_id IN ('+','.join(docs)+');'
-    # f = codecs.open('s.txt', 'w')
-    # f.write(req)
-    # f.close()
-    db = Database()
-    rows = db.execute(req)
-    return rows
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    elif s == '0101':
+        req_template = ''' FROM  annotator_token
+        LEFT JOIN annotator_morphology
+        ON annotator_token.id = annotator_morphology.token_id
+        LEFT JOIN annotator_annotation
+        ON annotator_token.sent_id = annotator_annotation.document_id
+        WHERE 1 %s AND num>= annotator_annotation.start AND num <= annotator_annotation.end %s''' %(parse_gram(err, 'tag'), parse_lex(lex))
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    elif s == '0110':
+        req_template = ''' FROM  annotator_morphology
+        LEFT JOIN annotator_token
+        ON annotator_token.id = annotator_morphology.token_id
+        WHERE 1 %s %s''' %(parse_lex(lex), parse_gram(gram, 'gram'))
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    elif s == '0111':
+        req_template = ''' FROM  annotator_token
+        LEFT JOIN annotator_morphology
+        ON annotator_token.id = annotator_morphology.token_id
+        LEFT JOIN annotator_annotation
+        ON annotator_token.sent_id = annotator_annotation.document_id
+        WHERE 1 %s AND num>= annotator_annotation.start AND num <= annotator_annotation.end %s %s''' %(parse_gram(err, 'tag'), parse_lex(lex), parse_gram(gram, 'gram'))
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    elif s == '1000':
+        req_template = ''' FROM  annotator_morphology
+        LEFT JOIN annotator_token
+        ON annotator_token.id = annotator_morphology.token_id
+        WHERE 1 AND lem="%s" ''' %word
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    elif s == '1001':
+        req_template = ''' FROM  annotator_token
+        LEFT JOIN annotator_morphology
+        ON annotator_token.id = annotator_morphology.token_id
+        LEFT JOIN annotator_annotation
+        ON annotator_token.sent_id = annotator_annotation.document_id
+        WHERE 1 AND lem="%s" AND num>= annotator_annotation.start AND num <= annotator_annotation.end %s ''' %(word,parse_gram(err, 'tag'))
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    elif s == '1010':
+        req_template = ''' FROM  annotator_morphology
+        LEFT JOIN annotator_token
+        ON annotator_token.id = annotator_morphology.token_id
+        WHERE 1 AND lem="%s" %s''' %(word, parse_gram(gram, 'gram'))
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    elif s == '1011':
+        req_template = ''' FROM  annotator_token
+        LEFT JOIN annotator_morphology
+        ON annotator_token.id = annotator_morphology.token_id
+        LEFT JOIN annotator_annotation
+        ON annotator_token.sent_id = annotator_annotation.document_id
+        WHERE 1 AND lem="%s" AND num>= annotator_annotation.start AND num <= annotator_annotation.end %s %s''' %(word,parse_gram(err, 'tag'), parse_gram(gram, 'gram'))
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    elif s == '1100':
+        req_template = ''' FROM  annotator_morphology
+        LEFT JOIN annotator_token
+        ON annotator_token.id = annotator_morphology.token_id
+        WHERE 1 AND lem="%s" %s''' %(word, parse_lex(lex))
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    elif s == '1101':
+        req_template = ''' FROM  annotator_token
+        LEFT JOIN annotator_morphology
+        ON annotator_token.id = annotator_morphology.token_id
+        LEFT JOIN annotator_annotation
+        ON annotator_token.sent_id = annotator_annotation.document_id
+        WHERE 1 AND lem="%s" AND num>= annotator_annotation.start AND num <= annotator_annotation.end %s %s''' %(word,parse_gram(err, 'tag'), parse_lex(lex))
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    elif s == '1110':
+        req_template = ''' FROM  annotator_token
+        LEFT JOIN annotator_morphology
+        ON annotator_token.id = annotator_morphology.token_id
+        WHERE 1 AND lem="%s" %s %s ''' %(word, parse_lex(lex), parse_gram(gram, 'gram'))
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    else:
+        req_template = ''' FROM  annotator_token
+        LEFT JOIN annotator_morphology
+        ON annotator_token.id = annotator_morphology.token_id
+        LEFT JOIN annotator_annotation
+        ON annotator_token.sent_id = annotator_annotation.document_id
+        WHERE 1 AND lem="%s" AND num>= annotator_annotation.start AND num <= annotator_annotation.end %s %s %s''' %(word,parse_gram(err, 'tag'), parse_lex(lex), parse_gram(gram, 'gram'))
+        if flag:
+            req_template += 'AND doc_id IN ('+','.join(docs)+')'
+        n_req = '''SELECT COUNT(DISTINCT sent_id)''' + req_template
+        req = 'SELECT DISTINCT sent_id, num' + req_template
+        req1 = 'SELECT DISTINCT sent_id' + req_template
+        d_req = '''SELECT COUNT(DISTINCT doc_id)''' + req_template
+    req1 += ' LIMIT %d,%d;' %((page - 1)*per_page, per_page)
 
-def parse_gram(gram):
+    sentences = '(' + ', '.join([str(i[0]) for i in db.execute(req1)]) + ')'
+    if sentences == '()':
+        return [], 0, 0
+    if s == '0001':
+        req += ' AND document_id IN ' + sentences
+    else:
+        req += ' AND sent_id IN ' + sentences
+    f = codecs.open('/home/elmira/heritage_corpus/tempfiles/s.txt', 'w')
+    f.write(req + '\r\n' + n_req + '\r\n' + d_req)
+    f.close()
+    rows = db.execute(req)
+    sent_num = int(db.execute(n_req)[0][0])
+    d_num = int(db.execute(d_req)[0][0])
+    return rows, sent_num, d_num
+
+
+def parse_lex(lex):
+    req = ''
+    arr = ['lex LIKE "' + gr.strip() + '"' for gr in lex.replace(')', '').replace('(', '').split('|')]
+    if len(arr) == 1:
+        req += 'AND '+ arr[0] + ' '
+    else:
+        req += 'AND (' + ' OR '.join(arr) + ') '
+    return req
+
+
+def parse_gram(gram, t):
     req = ''
     arr = gram.split(',')
     for gr in arr:
-        one = ['gram REGEXP "[[:<:]]' + i + '[[:>:]]"' for i in gr.replace(')', '').replace('(', '').split('|')]
+        one = [t + ' LIKE "%' + i.strip() + '%"' for i in gr.replace(')', '').replace('(', '').split('|')]
         if len(one) == 1:
             req += 'AND '+ one[0] + ' '
         else:
             req += 'AND (' + ' OR '.join(one) + ') '
     return req
+
+
+def bincode(a,b,c,d):
+    s = ''
+    for i in [a,b,c,d]:
+        s += '1' if i else '0'
+    return s

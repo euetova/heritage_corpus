@@ -3,11 +3,22 @@ from annotator.models import Document, Annotation, Sentence, Token, Morphology
 from django.contrib.admin import AdminSite
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
+from news.models import Article, Section
 
 class LearnerCorpusAdminSite(AdminSite):
     site_header = 'Russian Heritage Corpus'
     site_title = 'Admin'
     index_title = 'RULEC'
+
+
+class ArticleAdmin(admin.ModelAdmin):
+    fields = ['date', 'text_eng', 'text_rus']
+    list_display = ('date', 'text_eng', 'text_rus', 'created')
+
+
+class SectionAdmin(admin.ModelAdmin):
+    fields = ['number', 'header_eng', 'text_eng', 'header_rus', 'text_rus']
+    list_display = ('number', 'header_eng', 'text_eng', 'header_rus', 'text_rus')
 
 
 class DocumentAdmin(admin.ModelAdmin):
@@ -60,5 +71,7 @@ learner_admin.register(Annotation, AnnotationAdmin)
 learner_admin.register(Sentence)
 learner_admin.register(Token, TokenAdmin)
 # learner_admin.register(Morphology, MorphAdmin)
+learner_admin.register(Article, ArticleAdmin)
+learner_admin.register(Section, SectionAdmin)
 learner_admin.register(User, UserAdmin)
 learner_admin.register(Group, GroupAdmin)

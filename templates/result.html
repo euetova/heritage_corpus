@@ -30,30 +30,30 @@ $(document).ready(function(){
 {% block content_header %}Result{% endblock content_header %}
 
 {% block content %}
-    <h1> {{ query }} </h1>
+    <h2><span  class="label label-success">{{ query }}</span></h2>
      <h4><span  class="label label-default">Corpus total: {{ numbers.total_docs }} documents, {{ numbers.total_sents }} sentences, {{ numbers.total_tokens }} words.</span></h4>
     <h4><span  class="label label-default">Search executed in a user-defined subcorpus of {{ numbers.subcorpus_docs }} documents, {{ numbers.subcorpus_sents }} sentences, {{ numbers.subcorpus_words }} words.</span></h4>
     <h4><span  class="label label-default">Found: {{ total_docs }} documents, {{ total }} contexts.</span></h4>
 
     <nav>
   <ul class="pagination pagination-sm">
-       {% if result.has_previous %}
+       {% if pages.has_previous %}
            <li>
-      <a href="{{ path }}&page={{ result.previous_page_number }}" aria-label="Previous">
+      <a href="{{ path }}&page={{ pages.previous_page_number }}" aria-label="Previous">
         <span aria-hidden="true">предыдущая страница</span>
       </a>
     </li>
             {% endif %}
-{% for i in result.paginator.page_range2 %}
+{% for i in pages.paginator.page_range2 %}
     <li
-    {% if result.number == i %}
+    {% if pages.number == i %}
             class="active"
             {% endif %}
     ><a href="{{ path }}&page={{ i }}">{{ i }}</a></li>
         {% endfor %}
-  {% if result.has_next %}
+  {% if pages.has_next %}
       <li>
-      <a href="{{ path }}&page={{ result.next_page_number }}" aria-label="Next">
+      <a href="{{ path }}&page={{ pages.next_page_number }}" aria-label="Next">
         <span aria-hidden="true">следующая страница</span>
       </a>
     </li>
@@ -62,7 +62,7 @@ $(document).ready(function(){
   </ul>
 </nav>
 
-    <ol start="{{ result.number|multiply:10 }}">
+    <ol start="{{olstart}}">
 
     {% for sent in result %}
         <li><div ><span class="doctitle">{{ sent.doc_id }}</span>
@@ -99,23 +99,23 @@ $(document).ready(function(){
 {% endfor %}
       <nav>
   <ul class="pagination pagination-sm">
-       {% if result.has_previous %}
+       {% if pages.has_previous %}
            <li>
-      <a href="{{ path }}&page={{ result.previous_page_number }}" aria-label="Previous">
+      <a href="{{ path }}&page={{ pages.previous_page_number }}" aria-label="Previous">
         <span aria-hidden="true">предыдущая страница</span>
       </a>
     </li>
             {% endif %}
-{% for i in result.paginator.page_range2 %}
+{% for i in pages.paginator.page_range2 %}
     <li
-    {% if result.number == i %}
+    {% if pages.number == i %}
             class="active"
             {% endif %}
     ><a href="{{ path }}&page={{ i }}">{{ i }}</a></li>
         {% endfor %}
-  {% if result.has_next %}
+  {% if pages.has_next %}
       <li>
-      <a href="{{ path }}&page={{ result.next_page_number }}" aria-label="Next">
+      <a href="{{ path }}&page={{ pages.next_page_number }}" aria-label="Next">
         <span aria-hidden="true">следующая страница</span>
       </a>
     </li>

@@ -199,4 +199,5 @@ class EditorView2(TemplateView):
         for sent in s1:
             context['j'].append(self.jquery.replace('***', str(sent.id)).replace('{{storage_api_base_url}}', context['storage_api_base_url']))
         context['data'] = [(d1,s1)]
+        context['doc_id'] = kwargs['doc_id']
         return context

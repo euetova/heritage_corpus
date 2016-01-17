@@ -6,49 +6,54 @@ from django.utils.translation import ugettext_lazy as _
 import uuid
 import json, codecs
 from utils import *
-regSpan= re.compile('<span class="token.*?</span>', flags=re.U | re.DOTALL)
+regSpan= re.compile('[.?,!:«(;#№–/...)»-]*<span .*?</span>[.?,!:«(;#№–/...)»-]*', flags=re.U | re.DOTALL)
 bold_regex = re.compile('/b\\[(\\d+)\\]')
 span_regex = re.compile('span\\[(\\d+)\\]')
 
-NativeChoices = ((u'eng', u'английский'), (u'nor', u'норвежский'), (u'kor', u'корейский'),
-                 (u'ita', u'итальянский'), (u'fr', u'французский'), (u'ger', u'немецкий'),
-                 (u'ser', u'сербский'))
+NativeChoices = ((u'eng', _(u'English')), (u'nor', _(u'Norwegian')), (u'kor', _(u'Korean')),
+                 (u'ita', _(u'Italian')), (u'fr', _(u'French')), (u'ger', _(u'German')),
+                 (u'ser', _(u'Serbian')))
+
 
 class Document(models.Model):
     """A document being annotated"""
-    owner = models.ForeignKey(User, blank=True, null=True)
+    owner = models.ForeignKey(User, blank=True, null=True, verbose_name=_('owner'))
     created = models.DateTimeField(auto_now_add=True, db_index=True)
-    title = models.CharField(max_length=250, db_index=True, null=True, blank=True, editable=True)
+    title = models.CharField(max_length=250, db_index=True, null=True, blank=True, editable=True, verbose_name=_('название'))
     body = models.TextField(help_text=_("Paste the text here."), verbose_name=_('text'))  # HTML
     # todo probably should delete this field and create a special form in admin
     author = models.CharField(max_length=100, help_text=_("Enter author's first and/or  second name."), verbose_name=_('author'))
-    mode = models.CharField(max_length=50, null=True, blank=True, db_index=True, choices=((u'п', u'письменный'), (u'у', u'устный')))
+    mode = models.CharField(max_length=50, null=True, blank=True, db_index=True, verbose_name=_('mode'), choices=((u'п', _(u'written')), (u'у', _(u'oral'))))
     filename = models.CharField(max_length=5000, help_text=_("Enter the name of the folder and file from which the text is taken."), verbose_name=_('Source'))
-    subcorpus = models.CharField(max_length=5000, null=True, blank=True)
+    subcorpus = models.CharField(max_length=5000, null=True, blank=True, verbose_name=_('subcorpus'))
 
     # optional fields - need them for meta in CoRST
     date1 = models.IntegerField(null=True, blank=True, help_text=_("When the text was written, e.g. 2014."), verbose_name=_('date'))
     date2 = models.IntegerField(null=True, blank=True)
-    genre = models.CharField(max_length=100, null=True, blank=True, db_index=True)
-    gender = models.CharField(max_length=5, null=True, blank=True, db_index=True, choices=((u'ж', u'женский'), (u'м', u'мужской')))
+    genre = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('genre'))
+    gender = models.CharField(max_length=5, null=True, blank=True, db_index=True, verbose_name=_('gender'), choices=((u'ж', _(u'female')), (u'м', _(u'male'))))
     course = models.CharField(max_length=100, null=True, blank=True, db_index=True, help_text=_("Enter the name of the program in which the text was assigned"), verbose_name=_('program'))
-    language_background = models.CharField(max_length=100, null=True, blank=True, db_index=True, choices=((u'HL', u'эритажный'), (u'FL', u'иностранный')))
-    text_type = models.CharField(max_length=100, null=True, blank=True, db_index=True)
-    level = models.CharField(max_length=100, null=True, blank=True, db_index=True)
-    annotation = models.CharField(max_length=100, null=True, blank=True, db_index=True)
-    student_code = models.IntegerField(null=True, blank=True)
-    time_limit = models.CharField(max_length=100, null=True, blank=True)
-    native = models.CharField(max_length=10, null=True, blank=True, choices=NativeChoices, db_index=True)
-    fullmeta = models.BooleanField(null=True, blank=True)
+    language_background = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('language background'), choices=((u'HL', _(u'heritage')), (u'FL', _(u'foreign'))))
+    text_type = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('type of text'))
+    level = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('level'))
+    annotation = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('annotation'))
+    student_code = models.IntegerField(null=True, blank=True, verbose_name=_('student code'))
+    time_limit = models.CharField(max_length=100, null=True, blank=True, verbose_name=_('time limit'))
+    native = models.CharField(max_length=10, null=True, blank=True, choices=NativeChoices, db_index=True, verbose_name=_('dominant language'))
+    fullmeta = models.NullBooleanField(null=True, blank=True, verbose_name=_('full metadata'))
 
     # needed for general corpus statictics
-    words = models.IntegerField(editable=True, null=True, blank=True)
-    sentences = models.IntegerField(editable=False, null=True, blank=True)
-    date_displayed = models.CharField(editable=False, max_length=50, null=True, blank=True)
+    words = models.IntegerField(editable=True, null=True, blank=True, verbose_name=_('words'))
+    sentences = models.IntegerField(editable=False, null=True, blank=True, verbose_name=_('sentences'))
+    date_displayed = models.CharField(editable=False, max_length=50, null=True, blank=True, verbose_name=_('date displayed'))
 
     # needed for annotation statistics
-    annotated = models.BooleanField(default=False)
-    checked = models.BooleanField(default=False)
+    annotated = models.BooleanField(default=False, verbose_name=_('text is annotated'))
+    checked = models.BooleanField(default=False, verbose_name=_('text is checked'))
+
+    class Meta:
+        verbose_name = _('document')
+        verbose_name_plural = _('documents')
 
     def __unicode__(self):
         return self.title + ', ' + self.author if self.title else '- , ' + self.author
@@ -101,8 +106,12 @@ class Document(models.Model):
                         lem = lem.split('"')[0]
                         bastard = True
                     lex, gram = ana[1].split('=')
+                    if ',' in lex:
+                        lex = lex.split(',')
+                        gram = ','.join(lex[1:]) + ',' + gram
+                        lex = lex[0]
                     if bastard:
-                        lex = 'bastard,' + lex
+                        gram = 'bastard,' + gram
                     Morphology.objects.get_or_create(token=token, lem=lem,
                                                      lex=lex, gram=gram)
                 word = ' <span class="token" title="' + all_ana + '">' + \
@@ -128,6 +137,10 @@ class Sentence(models.Model):
     def __unicode__(self):
         return self.text
 
+    class Meta:
+        verbose_name = _('sentence')
+        verbose_name_plural = _('sentences')
+
 
 class Annotation(models.Model):
     # taken from Django-Annotator-Store
@@ -140,6 +153,10 @@ class Annotation(models.Model):
     tag = models.CharField(max_length=200, null=True, blank=True, db_index=True)
     start = models.IntegerField(blank=True, null=True)
     end = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = _('annotation')
+        verbose_name_plural = _('annotations')
 
     def set_guid(self):
         self.guid = str(uuid.uuid4())
@@ -290,6 +307,10 @@ class Token(models.Model):
     def __unicode__(self):
         return self.token
 
+    class Meta:
+        verbose_name = _('token')
+        verbose_name_plural = _('tokens')
+
 
 class Morphology(models.Model):
     # stupid class name, will change it someday
@@ -300,3 +321,7 @@ class Morphology(models.Model):
 
     def __unicode__(self):
         return self.lem + ' ' + self.lex + ' ' + self.gram
+
+    class Meta:
+        verbose_name = _('analysis')
+        verbose_name_plural = _('analyses')
