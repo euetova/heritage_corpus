@@ -30,7 +30,7 @@ $(document).ready(function(){
 {% block content_header %}Result{% endblock content_header %}
 
 {% block content %}
-    <h2><span  class="label label-success">{{ query }}</span></h2>
+    <h3><span>{{ query|safe|linebreaksbr }}</span></h3>
      <h4><span  class="label label-default">Corpus total: {{ numbers.total_docs }} documents, {{ numbers.total_sents }} sentences, {{ numbers.total_tokens }} words.</span></h4>
     <h4><span  class="label label-default">Search executed in a user-defined subcorpus of {{ numbers.subcorpus_docs }} documents, {{ numbers.subcorpus_sents }} sentences, {{ numbers.subcorpus_words }} words.</span></h4>
     <h4><span  class="label label-default">Found: {{ total_docs }} documents, {{ total }} contexts.</span></h4>

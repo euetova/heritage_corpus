@@ -20,8 +20,23 @@
 
   <form name="gramForm" id="gramForm" action="">
     <div class="row">
-      <div class="col-sm-4">
-        <div class="panel panel-default">
+        <div class="col-sm-4">
+<div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 title="Invert" class="panel-title gr_inv activeA grammar" onClick="inverse('orpho')">Орфографические ошибки</h3>
+          </div>
+        <div class="panel-body">
+          <div class="gr_group">
+<input type="checkbox" name="orpho" value="Graph" id="orphograph">&nbsp;<label for="orphograph">Graph</label><br/>
+<input type="checkbox" name="orpho" value="Hyphen" id="orphohyphen">&nbsp;<label for="orphohyphen">Hyphen</label><br/>
+<input type="checkbox" name="orpho" value="Space" id="orphospace">&nbsp;<label for="orphospace">Space</label><br/>
+<input type="checkbox" name="orpho" value="Ortho" id="orphoortho">&nbsp;<label for="orphoortho">Ortho</label><br/>
+<input type="checkbox" name="orpho" value="Translit" id="orphotranslit">&nbsp;<label for="orphotranslit">Translit</label><br/>
+<input type="checkbox" name="orpho" value="Misspell" id="orphomisspell">&nbsp;<label for="orphomisspell">Misspell</label><br/>
+          </div>
+        </div>
+        </div>
+<div class="panel panel-default">
           <div class="panel-heading">
             <h3 title="Invert" class="panel-title activeA  gr_inv grammar" onClick="inverse('lexis')">Лексические ошибки</h3>
           </div>
@@ -34,28 +49,7 @@
           </div>
         </div>
         </div>
-      </div>
-    </div>
-    
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 title="Invert" class="panel-title gr_inv activeA grammar" onClick="inverse('orpho')">Орфографические ошибки</h3>
-          </div>
-        <div class="panel-body">
-          <div class="gr_group">
-<input type="checkbox" name="orpho" value="Graph" id="orphograph">&nbsp;<label for="orphograph">Graph</label><br/>
-<input type="checkbox" name="orpho" value="Hyphen" id="orphohyphen">&nbsp;<label for="orphohyphen">Hyphen</label><br/>
-<input type="checkbox" name="orpho" value="Space" id="orphospace">&nbsp;<label for="orphospace">Space</label><br/>
-<input type="checkbox" name="orpho" value="Del" id="orphodel">&nbsp;<label for="orphodel">Del</label><br/>
-<input type="checkbox" name="orpho" value="Insert" id="orphoinsert">&nbsp;<label for="orphoinsert">Insert</label><br/>
-<input type="checkbox" name="orpho" value="Subst" id="orphosubst">&nbsp;<label for="orphosubst">Subst</label><br/>
-<input type="checkbox" name="orpho" value="Transp" id="orphotransp">&nbsp;<label for="orphotransp">Transp</label><br/>
-<input type="checkbox" name="orpho" value="Ortho" id="orphoortho">&nbsp;<label for="orphoortho">Ortho</label><br/>
-          </div>
-        </div>
-        </div>
-      <div class="col-sm-4">
-        <div class="panel panel-default">
+<div class="panel panel-default">
           <div class="panel-heading">
             <h3 title="Invert" class="gr_inv panel-title activeA grammar" onClick="inverse('constr')">Ошибки в конструкциях</h3>
           </div>
@@ -65,8 +59,8 @@
           </div>
         </div>
         </div>
-      </div>
-      <div class="col-sm-4">
+    </div>
+<div class="col-sm-4">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h3 title="Invert" class="gr_inv panel-title activeA grammar" onClick="inverse('morpho')">Морфологические ошибки</h3>
@@ -81,35 +75,7 @@
           </div>
         </div>
         </div>
-      </div>
-      <div class="col-sm-4">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 title="Invert" class="panel-title gr_inv activeA grammar"  onClick="inverse('syntax')">Синтаксические ошибки</h3>
-          </div>
-        <div class="panel-body">
-          <div class="gr_group">
-<input type="checkbox" name="syntax" value="Asp" id="syntaxasp">&nbsp;<label for="syntaxasp">Asp</label><br/>
-<input type="checkbox" name="syntax" value="ArgStr" id="syntaxargstr">&nbsp;<label for="syntaxargstr">ArgStr</label><br/>
-<input type="checkbox" name="syntax" value="Passiv" id="syntaxpassiv">&nbsp;<label for="syntaxpassiv">Passiv</label><br/>
-<input type="checkbox" name="syntax" value="Refl" id="syntaxrefl">&nbsp;<label for="syntaxrefl">Refl</label><br/>
-<input type="checkbox" name="syntax" value="AgrNum" id="syntaxagrnum">&nbsp;<label for="syntaxagrnum">AgrNum</label><br/>
-<input type="checkbox" name="syntax" value="AgrCase" id="syntaxagrcase">&nbsp;<label for="syntaxagrcase">AgrCase</label><br/>
-<input type="checkbox" name="syntax" value="AgrGender" id="syntaxagrgender">&nbsp;<label for="syntaxagrgender">AgrGender</label><br/>
-<input type="checkbox" name="syntax" value="AgrPers" id="syntaxagrpers">&nbsp;<label for="syntaxagrpers">AgrPers</label><br/>
-<input type="checkbox" name="syntax" value="AgrGerund" id="syntaxagrgerund">&nbsp;<label for="syntaxagrgerund">AgrGerund</label><br/>
-<input type="checkbox" name="syntax" value="Gov" id="syntaxgov">&nbsp;<label for="syntaxgov">Gov</label><br/>
-<input type="checkbox" name="syntax" value="Ref" id="syntaxref">&nbsp;<label for="syntaxref">Ref</label><br/>
-<input type="checkbox" name="syntax" value="Conj" id="syntaxconj">&nbsp;<label for="syntaxconj">Conj</label><br/>
-<input type="checkbox" name="syntax" value="WO" id="syntaxwo">&nbsp;<label for="syntaxwo">WO</label><br/>
-<input type="checkbox" name="syntax" value="Neg" id="syntaxneg">&nbsp;<label for="syntaxneg">Neg</label><br/>
-<input type="checkbox" name="syntax" value="Aux" id="syntaxaux">&nbsp;<label for="syntaxaux">Aux</label><br/>
-<input type="checkbox" name="syntax" value="Syn" id="syntaxsyn">&nbsp;<label for="syntaxsyn">Syn</label><br/>
-          </div>
-        </div>
-        </div>
-      </div>
-        <div class="panel panel-default">
+    <div class="panel panel-default">
           <div class="panel-heading">
             <h3  title="Invert" class="panel-title activeA grammar gr_inv"  onClick="inverse('cause')">Причина ошибки</h3>
           </div>
@@ -121,8 +87,7 @@
           </div>
         </div>
         </div>
-      <div class="col-sm-4">
-        <div class="panel panel-default">
+    <div class="panel panel-default">
         <div class="panel-heading">
           <h3 title="Invert" class="panel-title gr_inv activeA grammar"  onClick="inverse('additional')">Дополнительные пометы</h3>
         </div>
@@ -130,12 +95,43 @@
           <div class="gr_group">
 <input type="checkbox" name="additional" value="Transfer" id="additionaltransfer">&nbsp;<label for="additionaltransfer">Transfer</label><br/>
 <input type="checkbox" name="additional" value="Not-clear" id="additionalnotclear">&nbsp;<label for="additionalnotclear">Not-clear</label><br/>
-<input type="checkbox" name="additional" value="DelW" id="additionaldelw">&nbsp;<label for="additionaldelw">DelW</label><br/>
-<input type="checkbox" name="additional" value="InsertW" id="additionalinsertw">&nbsp;<label for="additionalinsertw">InsertW</label><br/>
+<input type="checkbox" name="additional" value="Del" id="additionaldelw">&nbsp;<label for="additionaldelw">Del</label><br/>
+<input type="checkbox" name="additional" value="Insert" id="additionalinsertw">&nbsp;<label for="additionalinsertw">Insert</label><br/>
+<input type="checkbox" name="additional" value="Subst" id="orphosubst">&nbsp;<label for="orphosubst">Subst</label><br/>
+<input type="checkbox" name="additional" value="Transp" id="orphotransp">&nbsp;<label for="orphotransp">Transp</label><br/>
           </div>
         </div>
         </div>
       </div>
+<div class="col-sm-4">
+<div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 title="Invert" class="panel-title gr_inv activeA grammar"  onClick="inverse('syntax')">Синтаксические ошибки</h3>
+          </div>
+        <div class="panel-body">
+          <div class="gr_group">
+<input type="checkbox" name="syntax" value="Asp" id="syntaxasp">&nbsp;<label for="syntaxasp">Asp</label><br/>
+<input type="checkbox" name="syntax" value="ArgStr" id="syntaxargstr">&nbsp;<label for="syntaxargstr">ArgStr</label><br/>
+<input type="checkbox" name="syntax" value="Passive" id="syntaxpassiv">&nbsp;<label for="syntaxpassiv">Passive</label><br/>
+<input type="checkbox" name="syntax" value="Reflex" id="syntaxrefl">&nbsp;<label for="syntaxrefl">Reflex</label><br/>
+<input type="checkbox" name="syntax" value="AgrNum" id="syntaxagrnum">&nbsp;<label for="syntaxagrnum">AgrNum</label><br/>
+<input type="checkbox" name="syntax" value="AgrCase" id="syntaxagrcase">&nbsp;<label for="syntaxagrcase">AgrCase</label><br/>
+<input type="checkbox" name="syntax" value="AgrGender" id="syntaxagrgender">&nbsp;<label for="syntaxagrgender">AgrGender</label><br/>
+<input type="checkbox" name="syntax" value="AgrPers" id="syntaxagrpers">&nbsp;<label for="syntaxagrpers">AgrPers</label><br/>
+<input type="checkbox" name="syntax" value="AgrGerund" id="syntaxagrgerund">&nbsp;<label for="syntaxagrgerund">AgrGerund</label><br/>
+<input type="checkbox" name="syntax" value="Gov" id="syntaxgov">&nbsp;<label for="syntaxgov">Gov</label><br/>
+<input type="checkbox" name="syntax" value="Ref" id="syntaxref">&nbsp;<label for="syntaxref">Ref</label><br/>
+<input type="checkbox" name="syntax" value="Conj" id="syntaxconj">&nbsp;<label for="syntaxconj">Conj</label><br/>
+<input type="checkbox" name="syntax" value="WO" id="syntaxwo">&nbsp;<label for="syntaxwo">WO</label><br/>
+<input type="checkbox" name="syntax" value="Neg" id="syntaxneg">&nbsp;<label for="syntaxneg">Neg</label><br/>
+<input type="checkbox" name="syntax" value="Aux" id="syntaxaux">&nbsp;<label for="syntaxaux">Aux</label><br/>
+<input type="checkbox" name="syntax" value="Brev" id="syntaxbrev">&nbsp;<label for="syntaxbrev">Brev</label><br/>
+<input type="checkbox" name="syntax" value="Syntax" id="syntaxsyn">&nbsp;<label for="syntaxsyn">Syntax</label><br/>
+          </div>
+        </div>
+        </div>
+      </div>
+        </div>
     <div class="row">
       <div class="col-sm-12">
         <div class="panel-footer" align="center">

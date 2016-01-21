@@ -46,8 +46,8 @@ def download_file(request, doc_id, doc_type):
         response['Content-Disposition'] = 'filename="text_%s.txt"' %doc_id
         return response
     else:
-        req = "SELECT `token`,`num`,`punctl`,`punctr` FROM `annotator_token` WHERE `doc_id`=%s" %doc_id
-        rows = u'Слово\tНомер слова в предложении\tПунктуация слева\tПунктуация справа\r\n' + u'\r\n'.join(u'\t'.join([row[0], str(row[1]), row[2], row[3]]) for row in db.execute(req))
+        req = "SELECT `token`,`num`,`punctl`,`punctr`, `sent_id` FROM `annotator_token` WHERE `doc_id`=%s" %doc_id
+        rows = u'Номер предложения в базе данных\tСлово\tНомер слова в предложении\tПунктуация слева\tПунктуация справа\r\n' + u'\r\n'.join(u'\t'.join([str(row[4]),row[0], str(row[1]), row[2], row[3]]) for row in db.execute(req))
         response = HttpResponse(rows, content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="tokens_text_%s.csv"' %doc_id
         return response

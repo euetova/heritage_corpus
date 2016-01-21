@@ -18,7 +18,7 @@ $(function()
     $(document).on('click', '.btn-add', function(e)
     {
         forms = forms + 1;
-        e.preventDefault();
+{#        e.preventDefault();#}
 
         var controlForm = $('.controls div:first'),
             currentEntry = $(this).parents('.entry:first');
@@ -31,18 +31,27 @@ $(function()
         newEntry.find('#getgrm').attr('onclick', "getGrm("+(forms+2)+")");
         newEntry.find("#err"+(forms+1)).attr('id', "err"+(forms+2));
         newEntry.find('#geterr').attr('onclick', "getErr("+(forms+2)+")");
-        controlForm.find('.entry:not(:last) .btn-add')
-            .removeClass('btn-add').addClass('btn-remove')
+        newEntry.find('#from').val(forms+1);
+        newEntry.find('#to').val(forms+1);
+        if (forms == 1) {$(newEntry.find('.btn-add:last').clone()).appendTo(newEntry.find('.col-sm-2:last'));
+        newEntry.find('.btn-add:first').removeClass('btn-add').addClass('btn-remove')
             .removeClass('btn-info').addClass('btn-primary')
-            .html('<span class="glyphicon glyphicon-minus"></span>');
+            .html('<span class="glyphicon glyphicon-minus"></span>');}
+
+{#        controlForm.find('.entry:last) .btn-add')#}
+{#            .removeClass('btn-add').addClass('btn-remove')#}
+{#            .removeClass('btn-info').addClass('btn-primary')#}
+{#            .html('<span class="glyphicon glyphicon-minus"></span>');#}
+{#        $(newEntry.find('.btn-add:last').clone()).appendTo(controlForm.find('.entry:not(:last) .col-sm-2:last'));#}
         //controlForm.find('#lex2').id = "lex"+(forms+2);
         //alert(controlForm.getElementById('lex2'));
         //controlForm.find('#getlex').onclick = "getLex("+(forms+2)+")";
     }).on('click', '.btn-remove', function(e)
     {
 		$(this).parents('.entry:first').remove();
+        forms = forms-1;
 
-		e.preventDefault();
+{#		e.preventDefault();#}
 		return false;
 	});
 });
@@ -69,8 +78,9 @@ $( document ).ready(function() {
 
 {% block upper-row %}
     <div id="masthead">
-  <div class="container">
+
       <form method="get"  target="_blank">
+      <div class="container">
       <div class="row">
         <div class="col-sm-6">
           <h4>{% trans "Exact search" %}</h4>
@@ -93,17 +103,14 @@ $( document ).ready(function() {
               </div>
         </div>
     </div>
-        </div>
+{#        </div>#}
             {% endblock %}
 
-<div class="row">
 {% block content %}
-
-
-
+    <div class="container">
+<div class="row">
     <h4>{% trans "Lexico-grammatical search" %}</h4>
-<div class="controls">
-    <form role="form" autocomplete="off" method="get">
+    <div class="controls" id="controls">
         <div class="wrapper">
             <div class="well">
 
@@ -142,9 +149,9 @@ $( document ).ready(function() {
                     <label class="sr-only" for="to">{% trans "to" %}</label>
                     <div class="input-group input-group-sm">
                       <div class="input-group-addon">{% trans "From" %}</div>
-                      <input type="text" class="form-control" id="from" placeholder="1" name="from[]">
+                      <input type="text" class="form-control" id="from" placeholder="1" name="from[]" value='1'>
                       <div class="input-group-addon">{% trans "to" %}</div>
-                        <input type="text" class="form-control" id="to" placeholder="1" name="to[]">
+                        <input type="text" class="form-control" id="to" placeholder="1" name="to[]" value="1">
                     </div>
                   </div>
                     </div>
@@ -174,14 +181,17 @@ $( document ).ready(function() {
 {#                            <a id="getadd" onclick=""><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span></a>#}
 {#                            {% trans "Additional" %}<input class="form-control input-sm" type="text" name="additional[]" placeholder="{% trans "Additional" %}" size="100%"></label>#}
 {#                    </div>#}
-                    <div class="col-sm-1">
+                    <div class="col-sm-2">
                         <br><button id="b1" class="btn btn-success btn-add btn-sm" type="button"><span class="glyphicon glyphicon-plus"></span></button>
                     </div>
                 </div>
             </div>
-        </div></div>
+        </div>
+        </div>
 
         </div>
+     <input id="search" type="submit" class="btn btn-xs btn-default" value="{% trans "Search" %}" />
+    </div>
 
 <div class="modal fade" id="subcorpus" tabindex="-1" role="dialog" aria-labelledby="subcorpusLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -309,7 +319,6 @@ $( document ).ready(function() {
     </div>
   </div>
 
-
 <div class="modal fade" id="preferences" tabindex="-1" role="dialog" aria-labelledby="prefsLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -372,9 +381,8 @@ $( document ).ready(function() {
   </div>
 </div>
 
-        <input id="search" type="submit" class="btn btn-xs btn-default" value="{% trans "Search" %}" />
-        </form>
-            </div>
-
-{% endblock content %}
 </div>
+        </form>
+
+</div>
+{% endblock content %}
