@@ -9,6 +9,70 @@
 ** Built at: 2013-06-27 21:49:35Z
 */
 
+function apply_autocomplete(field_id) {
+    var availableTags = [
+      "ActionScript",
+      "AppleScript",
+      "Asp",
+      "BASIC",
+      "C",
+      "C++",
+      "Clojure",
+      "COBOL",
+      "ColdFusion",
+      "Erlang",
+      "Fortran",
+      "Groovy",
+      "Haskell",
+      "Java",
+      "JavaScript",
+      "Lisp",
+      "Perl",
+      "PHP",
+      "Python",
+      "Ruby",
+      "Scala",
+      "Scheme"
+    ];
+    function split( val ) {
+      return val.split( /,\s*/ );
+    }
+    function extractLast( term ) {
+      return split( term ).pop();
+    }
+
+    $( "#" + field_id )
+      // don't navigate away from the field on tab when selecting an item
+      .bind( "keydown", function( event ) {
+        if ( event.keyCode === $.ui.keyCode.TAB &&
+            $( this ).autocomplete( "instance" ).menu.active ) {
+          event.preventDefault();
+        }
+      })
+      .autocomplete({
+        minLength: 0,
+        source: function( request, response ) {
+          // delegate back to autocomplete, but extract the last term
+          response( $.ui.autocomplete.filter(
+            availableTags, extractLast( request.term ) ) );
+        },
+        focus: function() {
+          // prevent value inserted on focus
+          return false;
+        },
+        select: function( event, ui ) {
+          var terms = split( this.value );
+          // remove the current input
+          terms.pop();
+          // add the selected item
+          terms.push( ui.item.value );
+          // add placeholder to get the comma-and-space at the end
+          terms.push( "" );
+          this.value = terms.join( ", " );
+          return false;
+        }
+      });
+  }
 
 (function() {
   var $, Annotator, Delegator, LinkParser, Range, Util, base64Decode, base64UrlDecode, createDateFromISO8601, findChild, fn, functions, g, getNodeName, getNodePosition, gettext, parseToken, simpleXPathJQuery, simpleXPathPure, _Annotator, _gettext, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4, _t,
@@ -1129,6 +1193,7 @@
       save = function() {
         cleanup();
         $(annotation.highlights).removeClass('annotator-hl-temporary');
+
         return _this.publish('annotationCreated', [annotation]);
       };
       cancel = function() {
@@ -1420,6 +1485,8 @@
         id: field.id,
         placeholder: field.label
       });
+        //if(field.label == 'Add some tags here…')
+        //{apply_autocomplete(field.id);}
       if (field.type === 'checkbox') {
         input[0].type = 'checkbox';
         element.addClass('annotator-checkbox');
@@ -2066,17 +2133,23 @@
           if (data.id == null) {
             console.warn(Annotator._t("Warning: No ID returned from server for annotation "), annotation);
           }
+        //console.log(annotation.highlights[0].parentNode.parentNode.parentNode.id);
+          search(annotation.highlights[0].parentNode.parentNode.parentNode.id);
           return _this.updateAnnotation(annotation, data);
         });
       } else {
+          //console.log(annotation.highlights[0].parentNode.parentNode.parentNode.id);
+          search(annotation.highlights[0].parentNode.parentNode.parentNode.id);
         return this.updateAnnotation(annotation, {});
       }
     };
 
     Store.prototype.annotationUpdated = function(annotation) {
       var _this = this;
+        var sentid = this.annotations[0].document;
       if (__indexOf.call(this.annotations, annotation) >= 0) {
         return this._apiRequest('update', annotation, (function(data) {
+          search(sentid);
           return _this.updateAnnotation(annotation, data);
         }));
       }
@@ -2084,8 +2157,10 @@
 
     Store.prototype.annotationDeleted = function(annotation) {
       var _this = this;
+        var sentid = this.annotations[0].document;
       if (__indexOf.call(this.annotations, annotation) >= 0) {
         return this._apiRequest('destroy', annotation, (function() {
+            search(sentid);
           return _this.unregisterAnnotation(annotation);
         }));
       }

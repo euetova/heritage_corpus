@@ -154,7 +154,7 @@ def pages(sent_list, page, num):
 
 def exact_search(word, docs, flag, expand, page, per_page):
     db = Database()
-    # db.cur.execute('SELECT tok.sent_id, tok.doc_id, sent.text FROM `annotator_token` tok, `annotator_sentence` sent WHERE tok.token="дом" and tok.sent_id=sent.id;')
+    word = word.split()[0]
     req1 = 'SELECT COUNT(DISTINCT doc_id) FROM `annotator_token` WHERE token="'+word + '" '
     if flag:
         req1 += 'AND doc_id IN ('+','.join(docs) + ');'
@@ -168,8 +168,11 @@ def exact_search(word, docs, flag, expand, page, per_page):
         req2 += 'AND doc_id IN ('+','.join(docs) + ')'
     req2 += ' LIMIT %d,%d;' %((page - 1)*per_page, per_page)
     sentences = '(' + ', '.join([str(i[0]) for i in db.execute(req2)]) + ')'
-    req3 = 'SELECT sent_id, num FROM `annotator_token` WHERE token="'+ word +'" AND sent_id IN ' + sentences
-    tokens = db.execute(req3)
+    if sentences != '()':
+        req3 = 'SELECT sent_id, num FROM `annotator_token` WHERE token="'+ word +'" AND sent_id IN ' + sentences
+        tokens = db.execute(req3)
+    else:
+        tokens = []
     # tokens = Token.objects.filter(token__exact=word)
     e = defaultdict(list)
     for i, j in tokens:
@@ -177,10 +180,39 @@ def exact_search(word, docs, flag, expand, page, per_page):
     jq = []
     sent_list = [ShowSentence(i, e[i], expand) for i in e]
     for sent in sent_list:
-        # sent.temp = bold(word, sent.tagged)
-        # sent.save()
         jq.append(jquery.replace('***', str(sent.id)))
     return jq, sent_list, word, docs_len, sent_num
+
+
+def exact_full_search(word, docs, flag, expand, page, per_page):
+    db = Database()
+    s = word
+    words = word.split()
+    jq = []
+    a = {}
+    for wn in range(len(words)):
+        word = words[wn]
+        req3 = 'SELECT sent_id, num FROM `annotator_token` WHERE token="'+ word +'" '
+        if flag:
+            req3 += 'AND doc_id IN ('+','.join(docs) + ')'
+        rows = db.execute(req3)
+        e = defaultdict(list)
+        if rows:
+            for i, j in rows:
+                e[i].append(j)
+        if not a:
+            a = SentBag(e, len(words))
+        else:
+            fr, t = wn+1, wn+1
+            a.update(e, fr, t)
+    a = a.finalize(len(words))
+    sent_list = [ShowSentence(i, a[i], expand) for i in a]
+    sent_num = len(sent_list)
+    d_num = len(set(i.doc_id for i in sent_list))
+    sent_list = sorted(sent_list, key=lambda i: i.id)[per_page*(page-1):per_page*page]
+    for sent in sent_list:
+        jq.append(jquery.replace('***', str(sent.id)))
+    return jq, sent_list, s, d_num, sent_num
 
 
 def lex_search(query, docs, flag, expand, page, per_page):

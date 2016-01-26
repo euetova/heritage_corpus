@@ -23,8 +23,8 @@
 <link href="{% static "css/bootstrap.flatly.css" %}" rel="stylesheet">
   <script src="{% static "js/jquery.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/jquery.dajax.core.js" %}"></script>
     <link rel="shortcut icon" href="{% static "img/favicon.ico" %}">
+{#<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">#}
 
       {% block links %}
           <link href="{% static "css/style.css" %}" rel="stylesheet">
@@ -99,6 +99,7 @@ function snapSelectionToWord() {
             textRange.select();
         }
     }}
+
 </script>
 
     {% endblock %}
@@ -134,6 +135,7 @@ $(document).on('click','.navbar-toggle',function(e) {
         $('.navbar-collapse').collapse('hide');
     }
 });
+
 </script>
 
   {% endblock %}
@@ -304,6 +306,7 @@ $(document).on('click','.navbar-toggle',function(e) {
  <!-- script references-->
 
 		<script src="{% static "js/scripts.js" %}"></script>
+{#<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>#}
 
 	</body>
 <!-- Yandex.Metrika counter -->

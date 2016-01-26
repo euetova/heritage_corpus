@@ -1,3 +1,4 @@
+# coding=utf-8
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseForbidden
@@ -9,8 +10,8 @@ from django.contrib.auth.decorators import permission_required
 from django.conf import settings
 from django.template import *
 from django.contrib.auth.models import User
-
-import json, re
+from TestCorpus.db_utils import Database
+import json, re, codecs, uuid
 
 from annotator.models import Document, Annotation, Sentence, NativeChoices
 
@@ -28,6 +29,54 @@ def mark(request, doc_id):
         doc.annotated = False
     doc.save()
     return redirect(page)
+
+
+def get_correction(request, doc_id):
+    db = Database()
+    req = 'SELECT correct FROM annotator_sentence WHERE id=%s' %doc_id
+    s = db.execute(req)[0][0]
+    return HttpResponse(s)
+
+
+def handle_upload(request, doc_id):
+    page = request.POST['next']
+    has_headers = request.POST['has_headers']
+    start = 1 if has_headers else 0
+    # try:
+    t = [i.strip('\r\n') for i in request.FILES['InputFile'].readlines()]
+    # f = codecs.open('/home/elmira/heritage_corpus/tempfiles/request.txt', 'w')
+    # prevsent = 0
+    # wordn = 1
+    for ln in range(start, len(t)):
+        sent, word, wordnum, _, _, tag, corr, annotator = t[ln].split('\t')
+        sent = int(sent)
+        # if word == ' ':
+        #     continue
+        # if sent == prevsent:
+        #     wordn += 1
+        # else:
+        #     prevsent = sent
+        #     wordn = 1
+        if tag:
+            tag1 = [i.strip() for i in tag.split(',')]
+            # f.write(str(len(word.decode('utf-8'))))
+            # f.write('\r\n')
+            sent = Sentence.objects.get(pk=sent)
+            owner = User.objects.get(username=annotator)
+            annot = Annotation(owner=owner, document=sent, guid=str(uuid.uuid4()),
+                                             data=json.dumps({"ranges": [{"start": "/span["+wordnum+"]", "end": "/span["+wordnum+"]", "startOffset": 0, "endOffset": len(word.decode('utf-8'))}], "quote": word, "text": "", "tags": tag1, "corrs": corr}))
+            annot.tag = tag
+            annot.start, annot.end = int(wordnum), int(wordnum)
+            annot.save()
+
+    a = False
+    # f.close()
+    # except:
+    #     a = True
+    return redirect(page, alert=a)
+
+
+
 
 class BaseStorageView(View):
     def dispatch(self, request, *args, **kwargs):
@@ -175,19 +224,11 @@ class EditorView(TemplateView):
 class EditorView2(TemplateView):
     template_name = 'annotator/viewtest.html'
     jquery = """jQuery(function ($) {
-                $('#***').annotator()
-                    .annotator('addPlugin', 'Tags')
-                    .annotator('addPlugin', 'Corr')
+                $('#***').annotator().annotator('addPlugin', 'Tags').annotator('addPlugin', 'Corr')
                     .annotator('addPlugin', 'ReadOnlyAnnotations')
-                    .annotator('addPlugin', 'Store', {
-                          prefix: '{{storage_api_base_url}}',
-                          annotationData: {
-                            'document': ***
-                          },
-                          loadFromSearch: {
-                            'document': ***
-                          }
-                        });
+                    .annotator('addPlugin', 'Store', {prefix: '{{storage_api_base_url}}',
+                          annotationData: {'document': ***},
+                          loadFromSearch: {'document': ***}});
                     });"""
 
     def get_context_data(self, **kwargs):
