@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect, render
 #from models import Doc, Sentence, Error, Analysis, Token
 from annotator.models import Document, Sentence, Annotation, Token, Morphology
+from annotator.models import NativeChoices, BackgroundChoices, GenderChoices, ModeChoices
 from django.views.generic.base import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from forms import QueryForm
@@ -132,6 +133,11 @@ class Search(Index):
 
 
 class Statistics(Index):
+    def merge_two_dicts(self, x, y):
+        '''Given two dicts, merge them into a new dict as a shallow copy.'''
+        z = x.copy()
+        z.update(y)
+        return z
 
     def get(self, request, page):
         docs =Document.objects.all().count()
@@ -142,10 +148,12 @@ class Statistics(Index):
         sents = Sentence.objects.all().count()
         words = Token.objects.all().count()
         annotations = Annotation.objects.all().count()
-        gender = dict(Counter([i.gender for i in Document.objects.all()]))
+        a = defaultdict(str)
+        repl = lambda i, j: self.merge_two_dicts(a, dict(j))[i]
+        gender = dict(Counter([repl(i.gender, GenderChoices) for i in Document.objects.all()]))
         genres = dict(Counter([i.genre for i in Document.objects.all()]))
-        lb = dict(Counter([i.language_background for i in Document.objects.all()]))
-        native = dict(Counter([i.native for i in Document.objects.all()]))
+        lb = dict(Counter([repl(i.language_background, BackgroundChoices) for i in Document.objects.all()]))
+        native = dict(Counter([repl(i.native, NativeChoices) for i in Document.objects.all()]))
 
         return render_to_response('stats.html', {'docs':docs,
                                                  'progress': [doc_ann, doc_ann_percent,

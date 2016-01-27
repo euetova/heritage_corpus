@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% load staticfiles %}
+{% load i18n %}
 {% load annotator_tags %}
-{% block title %}Russian Learner Corpus Result{% endblock %}
-{% block meta_content %}Result{% endblock %}
+{% block title %}{% trans 'Russian Learner Corpus Result' %}{% endblock %}
+{% block meta_content %}{% trans 'Result' %}{% endblock %}
 
 {% block scripts %}
 {% for i in j %}
@@ -11,117 +12,129 @@
     </script>
 {% endfor %}
 {% endblock %}
-    {% block upper-row %}
-            {% endblock %}
 
-    {% block other %}
-<script type="text/javascript">
-$(document).ready(function(){
-  $('.token').tooltip({
-    placement : 'top',
-    trigger: 'hover',
-      delay: { "show": 500, "hide": 0 },
-      html: true
-  });
-});
-</script>
-    {% endblock %}
+{% block upper-row %}{% endblock %}
 
-{% block content_header %}Result{% endblock content_header %}
+{% block other %}
+    <script type="text/javascript">
+    $(document).ready(function(){
+      $('.token').tooltip({
+        placement : 'top',
+        trigger: 'hover',
+          delay: { "show": 500, "hide": 0 },
+          html: true
+      });
+    });
+    </script>
+{% endblock %}
+
+{% block content_header %}{% trans 'Result' %}{% endblock content_header %}
 
 {% block content %}
-    <h3><span>{{ query|safe|linebreaksbr }}</span></h3>
-     <h4><span  class="label label-default">Corpus total: {{ numbers.total_docs }} documents, {{ numbers.total_sents }} sentences, {{ numbers.total_tokens }} words.</span></h4>
-    <h4><span  class="label label-default">Search executed in a user-defined subcorpus of {{ numbers.subcorpus_docs }} documents, {{ numbers.subcorpus_sents }} sentences, {{ numbers.subcorpus_words }} words.</span></h4>
-    <h4><span  class="label label-default">Found: {{ total_docs }} documents, {{ total }} contexts.</span></h4>
+     <h3>
+         <span>{{ query|safe|linebreaksbr }}</span>
+     </h3>
+     <h4>
+         <span  class="label label-default">{% trans 'Corpus total' %}: {{ numbers.total_docs }} {% trans 'documents' %}, {{ numbers.total_sents }} {% trans 'sentences' %}, {{ numbers.total_tokens }} {% trans 'words' %}.</span>
+     </h4>
+    <h4>
+        <span  class="label label-default">{% trans 'Search executed in a user-defined subcorpus of' %} {{ numbers.subcorpus_docs }} {% trans 'documents' %}, {{ numbers.subcorpus_sents }} {% trans 'sentences' %}, {{ numbers.subcorpus_words }} {% trans 'words' %}.</span>
+    </h4>
+    <h4>
+        <span  class="label label-default">{% trans 'Found' %}: {{ total_docs }} {% trans 'documents' %}, {{ total }} {% trans 'contexts' %}.</span>
+    </h4>
 
     <nav>
-  <ul class="pagination pagination-sm">
+        <ul class="pagination pagination-sm">
        {% if pages.has_previous %}
-           <li>
-      <a href="{{ path }}&page={{ pages.previous_page_number }}" aria-label="Previous">
-        <span aria-hidden="true">предыдущая страница</span>
-      </a>
-    </li>
-            {% endif %}
-{% for i in pages.paginator.page_range2 %}
-    <li
-    {% if pages.number == i %}
-            class="active"
-            {% endif %}
-    ><a href="{{ path }}&page={{ i }}">{{ i }}</a></li>
+       <li>
+          <a href="{{ path }}&page={{ pages.previous_page_number }}" aria-label="Previous">
+            <span aria-hidden="true">{% trans 'previous page' %}</span>
+          </a>
+       </li>
+        {% endif %}
+        {% for i in pages.paginator.page_range2 %}
+        <li {% if pages.number == i %} class="active" {% endif %}>
+            <a href="{{ path }}&page={{ i }}">{{ i }}</a>
+        </li>
         {% endfor %}
-  {% if pages.has_next %}
-      <li>
-      <a href="{{ path }}&page={{ pages.next_page_number }}" aria-label="Next">
-        <span aria-hidden="true">следующая страница</span>
-      </a>
-    </li>
-            {% endif %}
+        {% if pages.has_next %}
+        <li>
+          <a href="{{ path }}&page={{ pages.next_page_number }}" aria-label="Next">
+            <span aria-hidden="true">{% trans 'next page' %}</span>
+          </a>
+        </li>
+        {% endif %}
 
   </ul>
-</nav>
+    </nav>
 
     <ol start="{{olstart}}">
-
     {% for sent in result %}
-        <li><div ><span class="doctitle">{{ sent.doc_id }}</span>
-        {% if request.user.is_authenticated %}#{{ sent.doc_id.id }}{% endif %}</div>
+        <li>
+            <div >
+                <span class="doctitle">{{ sent.doc_id }}</span>
+                {% if request.user.is_authenticated %}#{{ sent.doc_id.id }}{% endif %}
+            </div>
             <span id="{{ sent.id }}" contenteditable="false">
-                {{sent.tagged|safe|linebreaksbr}} <button type="button" class="btn btn-xs" data-toggle="modal" data-target="#{{ sent.id }}expand"><-...-></button>
+                {{sent.tagged|safe|linebreaksbr}}
+                <button type="button" class="btn btn-xs" data-toggle="modal" data-target="#{{ sent.id }}expand">
+                    <-...->
+                </button>
             </span>
-        <span class="correct_sentence" contenteditable="false"> <!-- onmouseup="snapSelectionToWord()"> -->
+            <span class="correct_sentence" contenteditable="false">
                 {{sent.correct|safe|linebreaksbr}}
             </span>
         </li>
-		{% endfor %}
+	{% endfor %}
     </ol>
 
     {% for sent in result %}
-<div class="modal fade" id="{{ sent.id }}expand" tabindex="-1" role="dialog" aria-labelledby="expandLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="expandLabel">{{ sent.doc_id }}</h4>
-      </div>
-      <div class="modal-body">
-
-          <div class="row">
-              <div class="col-sm-12">
-              <p>{{sent.expand|safe|linebreaksbr}}</p>
-                  </div>
-			</div>
+    <div class="modal fade" id="{{ sent.id }}expand" tabindex="-1" role="dialog" aria-labelledby="expandLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="expandLabel">{{ sent.doc_id }}</h4>
           </div>
-</div>
+          <div class="modal-body">
+
+              <div class="row">
+                  <div class="col-sm-12">
+                  <p>{{sent.expand|safe|linebreaksbr}}</p>
+                  </div>
+              </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-{% endfor %}
-      <nav>
-  <ul class="pagination pagination-sm">
+    {% endfor %}
+
+    <nav>
+        <ul class="pagination pagination-sm">
        {% if pages.has_previous %}
-           <li>
-      <a href="{{ path }}&page={{ pages.previous_page_number }}" aria-label="Previous">
-        <span aria-hidden="true">предыдущая страница</span>
-      </a>
-    </li>
-            {% endif %}
-{% for i in pages.paginator.page_range2 %}
-    <li
-    {% if pages.number == i %}
-            class="active"
-            {% endif %}
-    ><a href="{{ path }}&page={{ i }}">{{ i }}</a></li>
+       <li>
+          <a href="{{ path }}&page={{ pages.previous_page_number }}" aria-label="Previous">
+            <span aria-hidden="true">{% trans 'previous page' %}</span>
+          </a>
+       </li>
+        {% endif %}
+        {% for i in pages.paginator.page_range2 %}
+        <li {% if pages.number == i %} class="active" {% endif %}>
+            <a href="{{ path }}&page={{ i }}">{{ i }}</a>
+        </li>
         {% endfor %}
-  {% if pages.has_next %}
-      <li>
-      <a href="{{ path }}&page={{ pages.next_page_number }}" aria-label="Next">
-        <span aria-hidden="true">следующая страница</span>
-      </a>
-    </li>
-            {% endif %}
+        {% if pages.has_next %}
+        <li>
+          <a href="{{ path }}&page={{ pages.next_page_number }}" aria-label="Next">
+            <span aria-hidden="true">{% trans 'next page' %}</span>
+          </a>
+        </li>
+        {% endif %}
 
   </ul>
-</nav>
+    </nav>
 {% endblock content %}
 

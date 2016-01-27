@@ -13,7 +13,9 @@ span_regex = re.compile('span\\[(\\d+)\\]')
 NativeChoices = ((u'eng', _(u'English')), (u'nor', _(u'Norwegian')), (u'kor', _(u'Korean')),
                  (u'ita', _(u'Italian')), (u'fr', _(u'French')), (u'ger', _(u'German')),
                  (u'ser', _(u'Serbian')))
-
+ModeChoices = ((u'п', _(u'written')), (u'у', _(u'oral')))
+GenderChoices = ((u'ж', _(u'female')), (u'м', _(u'male')))
+BackgroundChoices = ((u'HL', _(u'heritage')), (u'FL', _(u'foreign')))
 
 class Document(models.Model):
     """A document being annotated"""
@@ -23,7 +25,7 @@ class Document(models.Model):
     body = models.TextField(help_text=_("Paste the text here."), verbose_name=_('text'))  # HTML
     # todo probably should delete this field and create a special form in admin
     author = models.CharField(max_length=100, help_text=_("Enter author's first and/or  second name."), verbose_name=_('author'))
-    mode = models.CharField(max_length=50, null=True, blank=True, db_index=True, verbose_name=_('mode'), choices=((u'п', _(u'written')), (u'у', _(u'oral'))))
+    mode = models.CharField(max_length=50, null=True, blank=True, db_index=True, verbose_name=_('mode'), choices=ModeChoices)
     filename = models.CharField(max_length=5000, help_text=_("Enter the name of the folder and file from which the text is taken."), verbose_name=_('Source'))
     subcorpus = models.CharField(max_length=5000, null=True, blank=True, verbose_name=_('subcorpus'))
 
@@ -31,9 +33,9 @@ class Document(models.Model):
     date1 = models.IntegerField(null=True, blank=True, help_text=_("When the text was written, e.g. 2014."), verbose_name=_('date'))
     date2 = models.IntegerField(null=True, blank=True)
     genre = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('genre'))
-    gender = models.CharField(max_length=5, null=True, blank=True, db_index=True, verbose_name=_('gender'), choices=((u'ж', _(u'female')), (u'м', _(u'male'))))
+    gender = models.CharField(max_length=5, null=True, blank=True, db_index=True, verbose_name=_('gender'), choices=GenderChoices)
     course = models.CharField(max_length=100, null=True, blank=True, db_index=True, help_text=_("Enter the name of the program in which the text was assigned"), verbose_name=_('program'))
-    language_background = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('language background'), choices=((u'HL', _(u'heritage')), (u'FL', _(u'foreign'))))
+    language_background = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('language background'), choices=BackgroundChoices)
     text_type = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('type of text'))
     level = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('level'))
     annotation = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('annotation'))

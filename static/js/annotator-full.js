@@ -9,71 +9,6 @@
 ** Built at: 2013-06-27 21:49:35Z
 */
 
-function apply_autocomplete(field_id) {
-    var availableTags = [
-      "ActionScript",
-      "AppleScript",
-      "Asp",
-      "BASIC",
-      "C",
-      "C++",
-      "Clojure",
-      "COBOL",
-      "ColdFusion",
-      "Erlang",
-      "Fortran",
-      "Groovy",
-      "Haskell",
-      "Java",
-      "JavaScript",
-      "Lisp",
-      "Perl",
-      "PHP",
-      "Python",
-      "Ruby",
-      "Scala",
-      "Scheme"
-    ];
-    function split( val ) {
-      return val.split( /,\s*/ );
-    }
-    function extractLast( term ) {
-      return split( term ).pop();
-    }
-
-    $( "#" + field_id )
-      // don't navigate away from the field on tab when selecting an item
-      .bind( "keydown", function( event ) {
-        if ( event.keyCode === $.ui.keyCode.TAB &&
-            $( this ).autocomplete( "instance" ).menu.active ) {
-          event.preventDefault();
-        }
-      })
-      .autocomplete({
-        minLength: 0,
-        source: function( request, response ) {
-          // delegate back to autocomplete, but extract the last term
-          response( $.ui.autocomplete.filter(
-            availableTags, extractLast( request.term ) ) );
-        },
-        focus: function() {
-          // prevent value inserted on focus
-          return false;
-        },
-        select: function( event, ui ) {
-          var terms = split( this.value );
-          // remove the current input
-          terms.pop();
-          // add the selected item
-          terms.push( ui.item.value );
-          // add placeholder to get the comma-and-space at the end
-          terms.push( "" );
-          this.value = terms.join( ", " );
-          return false;
-        }
-      });
-  }
-
 (function() {
   var $, Annotator, Delegator, LinkParser, Range, Util, base64Decode, base64UrlDecode, createDateFromISO8601, findChild, fn, functions, g, getNodeName, getNodePosition, gettext, parseToken, simpleXPathJQuery, simpleXPathPure, _Annotator, _gettext, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4, _t,
     __slice = [].slice,
@@ -1457,6 +1392,15 @@ function apply_autocomplete(field_id) {
       return this.hide();
     };
 
+              var items = [ "Graph", "Hyphen", "Space", "Ortho", "Translit", "Misspell", "Deriv", "Infl", "Num", "Gender", "Morph", "Asp", "ArgStr", "Passive", "Reflex", "AgrNum", "AgrCase", "AgrGender", "AgrPers", "AgrGerund", "Gov", "Ref", "Conj", "WO", "Neg", "Aux", "Brev", "Syntax", "Constr", "Lex", "CS", "Par", "Idiom", "Transfer", "Not-clear", "Del", "Insert", "Transp", "Subst"];
+
+    function split( val ) {
+      return val.split( /\s+/ );
+    }
+    function extractLast( term ) {
+      return split( term ).pop();
+    }
+
     Editor.prototype.addField = function(options) {
       var element, field, input;
       field = $.extend({
@@ -1485,8 +1429,31 @@ function apply_autocomplete(field_id) {
         id: field.id,
         placeholder: field.label
       });
-        //if(field.label == 'Add some tags here…')
-        //{apply_autocomplete(field.id);}
+        if(field.label == 'Add some tags here…')
+        {$(document).on('focus', '#'+field.id, function() {
+    $( "#" + field.id )
+      .autocomplete({
+        minLength: 1,
+        source: function( request, response ) {
+          response( $.ui.autocomplete.filter(
+            items, extractLast( request.term ) ) );
+        },
+        focus: function() {
+          return false;
+        },
+        select: function( event, ui ) {
+          var terms = split( this.value );
+          // remove the current input
+          terms.pop();
+          // add the selected item
+          terms.push( ui.item.value );
+          // add placeholder to get the comma-and-space at the end
+          terms.push( "" );
+          this.value = terms.join( " " );
+          return false;
+        }
+      });
+        })}
       if (field.type === 'checkbox') {
         input[0].type = 'checkbox';
         element.addClass('annotator-checkbox');
@@ -2157,8 +2124,8 @@ function apply_autocomplete(field_id) {
 
     Store.prototype.annotationDeleted = function(annotation) {
       var _this = this;
-        var sentid = this.annotations[0].document;
       if (__indexOf.call(this.annotations, annotation) >= 0) {
+          var sentid = this.annotations[0].document;
         return this._apiRequest('destroy', annotation, (function() {
             search(sentid);
           return _this.unregisterAnnotation(annotation);

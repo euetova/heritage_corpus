@@ -3,46 +3,28 @@
 {% load staticfiles %}
 {% load i18n %}
 {% load annotator_tags %}
-{% block title %}My amazing corpus Result{% endblock %}
-{% block meta_content %}Result{% endblock %}
+{% block title %}{% trans 'Russian Learner Corpus Annotation' %}{% endblock %}
+{% block meta_content %}{% trans 'Annotation' %}{% endblock %}
 
 {% block scripts %}
-{#    {% dajaxice_js_import %}#}
 {% for i in j %}
      <script>
     {{ i|safe }}
     </script>
     {% endfor %}
-{#    <script>#}
-
-{#    $(document).ready(function(){#}
-{#        //$('.correct_sentence').each(function() {#}
-{##}
-{#    //});#}
-{#    });#}
-
-{#    function calculate(){#}
-{#    Dajaxice.annotator.multiply(Dajax.process,{'a':$('#a').val(),'b':$('#b').val()})#}}
-{#    function get_ids(){#}
-{#        var arr = $.map($(".correct_sentence"), function(n, i){return n.id;});#}
-{#        arr.forEach(function(item, i, arr) {#}
-{#            update_corrections(item);#}
-{#        });#}
-{#    }#}
-{##}
-{#    function update_corrections(num){#}
-{#        //alert(num);#}
-{#        Dajaxice.annotator.loadcorrections(Dajax.process,{'num': num});#}
-{#    }#}
-
-{#    </script>#}
 
 {% endblock %}
     {% block upper-row %}
             {% endblock %}
 
     {% block other %}
-{# <script src="{% static "js/autoComplt.js" %}"></script>#}
+
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+        <style>
+        .ui-autocomplete { position: absolute; cursor: default;z-index:30000 !important;}
+        </style>
 <script type="text/javascript">
 $(document).ready(function(){
     $(".token[title*='bastard']").css( "text-decoration", "underline" );
@@ -56,11 +38,11 @@ $.get("/RLC/document-annotations/get_correction_by_id/"+id,
                     });
             return false;
         }
-
 </script>
+
     {% endblock %}
 
-{% block content_header %}Annotate text{% endblock content_header %}
+{% block content_header %}{% trans 'Annotate text' %}{% endblock content_header %}
 {% block content %}
     {% if alert %}
                   <div class="alert alert-warning alert-dismissible small" role="alert">
@@ -72,7 +54,7 @@ $.get("/RLC/document-annotations/get_correction_by_id/"+id,
     <div class="row">
       <div class="col-md-6">
           <h2>
-        <span class="lead">Разметка текста:</span> <strong>{{doc}}</strong>
+        <span class="lead">{% trans 'Annotate text' %}:</span> <strong>{{doc}}</strong>
 
     </h2>
       </div>
@@ -86,14 +68,14 @@ $.get("/RLC/document-annotations/get_correction_by_id/"+id,
                   <form action="mark" method="POST">
                   <input type="hidden" name="next" value="{{ request.get_full_path }}" />
                 <button type="submit" class="btn btn-warning btn-sm" value="checked" name="mark">
-                  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Checked
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% trans 'Checked' %}
                 </button></form>
               {% endif %}
                       {% if doc.checked %}
                   <form action="mark" method="POST">
                   <input type="hidden" name="next" value="{{ request.get_full_path }}" />
                 <button type="submit" class="btn btn-warning btn-sm" value="unchecked" name="mark">
-                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Not checked
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> {% trans 'Not checked' %}
                 </button></form>
               {% endif %}
                   {% endif %}
@@ -104,7 +86,7 @@ $.get("/RLC/document-annotations/get_correction_by_id/"+id,
               <form action="mark" method="POST">
               <input type="hidden" name="next" value="{{ request.get_full_path }}" />
                  <button type="submit" class="btn btn-warning btn-sm" value="annotated" name="mark">
-                  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> Annotated
+                  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> {% trans 'Annotated' %}
                 </button>
               </form></h2>
       {% endif %}
@@ -112,7 +94,7 @@ $.get("/RLC/document-annotations/get_correction_by_id/"+id,
               <form action="mark" method="POST">
               <input type="hidden" name="next" value="{{ request.get_full_path }}" />
                  <button type="submit" class="btn btn-warning btn-sm" value="unannotated" name="mark">
-                  <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> Not annotated
+                  <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> {% trans 'Not annotated' %}
                 </button>
               </form></h2>
       {% endif %}
@@ -122,19 +104,14 @@ $.get("/RLC/document-annotations/get_correction_by_id/"+id,
       </div>
 
 	<div class="row">
- <!--  <input type="text" value="5" id="a"> x
-<input type="text" value="6" id="b"> =
-<input type="text" value="" id="result">
-<input type="button" value="Multiply!" onclick="calculate();"> -->
             {% for sent in sents %}
                 <span id="{{ sent.id }}" class="original_sentence" contenteditable="false">
-                    <!-- onmouseup="snapSelectionToWord() -->
                     {{sent.tagged|safe|linebreaksbr}}
                 </span>
-                <span class="correct_sentence"  id = "{{ sent.id }}+" contenteditable="false"> <!-- onmouseup="snapSelectionToWord() -->
+                <span class="correct_sentence"  id = "{{ sent.id }}+" contenteditable="false">
                     {{sent.correct|safe|linebreaksbr}}
                 </span><br>
-                <span class="correct_sentence"  id = "second{{ sent.id }}" contenteditable="false"> <!-- onmouseup="snapSelectionToWord() -->
+                <span class="correct_sentence"  id = "second{{ sent.id }}" contenteditable="false">
                     {{sent.correct|safe|linebreaksbr}}
                 </span><br><br>
             {% endfor %}
@@ -142,10 +119,11 @@ $.get("/RLC/document-annotations/get_correction_by_id/"+id,
 {% endfor %}
     <div class="btn-group" role="group">
 
-    <a class="btn btn-default btn-sm" href="/RLC/download_file/{{ doc_id }}/ann" role="button">Download annotation as csv</a>
-    <a class="btn btn-default  btn-sm" href="/RLC/download_file/{{ doc_id }}/tokens" role="button">Download text as csv</a>
+    <a class="btn btn-default btn-sm" href="/RLC/download_file/{{ doc_id }}/ann" role="button">{% trans 'Download annotation as csv' %}</a>
+    <a class="btn btn-default  btn-sm" href="/RLC/download_file/{{ doc_id }}/tokens" role="button">{% trans 'Download text as csv' %}</a>
         <a class="btn btn-default  btn-sm" href="/RLC/download_file/{{ doc_id }}/text" role="button">{% trans 'Download plain text' %}</a>
      <button type="button" class="btn btn-default  btn-sm" data-toggle="modal" data-target="#upload_csv">{% trans "Upload annotation" %}</button>
+
     </div>
 
 
@@ -154,22 +132,22 @@ $.get("/RLC/document-annotations/get_correction_by_id/"+id,
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Загрузить файл с разметкой</h4>
+        <h4 class="modal-title">{% trans 'Загрузить файл с разметкой' %}</h4>
       </div>
       <div class="modal-body">
         <form action="handle_upload" method="post" enctype="multipart/form-data">
             <input type="hidden" name="next" value="{{ request.get_full_path }}" />
   <div class="form-group">
-    <label for="exampleInputFile">CSV с разметкой</label>
+    <label for="exampleInputFile">{% trans 'CSV с разметкой' %}</label>
     <input type="file" name="InputFile">
-    <p class="help-block">Выберите файл с разметкой. Убедитесь, что файл сохранен в кодировке utf-8.</p>
+    <p class="help-block">{% trans 'Выберите файл с разметкой. Убедитесь, что файл сохранен в кодировке utf-8.' %}</p>
   </div>
              <div class="checkbox">
     <label>
-      <input type="checkbox" name="has_headers"> В файле есть строка заголовков.
+      <input type="checkbox" name="has_headers"> {% trans 'В файле есть строка заголовков.' %}
     </label>
   </div>
-  <button type="submit" class="btn btn-default">Загрузить</button>
+  <button type="submit" class="btn btn-default">{% trans 'Загрузить' %}</button>
 </form>
       </div>
     </div><!-- /.modal-content -->

@@ -1,22 +1,24 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}
-    Russian Learner Corpus Statistics
+    {% trans 'Russian Learner Corpus Statistics' %}
+
 
 {% endblock %}
 {% block meta_content %}
-    Statistics
+    {% trans 'Statistics' %}
 {% endblock %} 
 
 {% block upper-row %}
 {% endblock %}
 
 {% block content %}
-    <h1>List of documents for annotation</h1>
+    <h1>{% trans 'List of documents for annotation' %}</h1>
 
     <div class="row">
     <form method="get">
-    <p>Выбрать язык:
+    <p>{% trans 'Choose language:' %}
         {% for lang in langs %}
         <label class="checkbox-inline">
         <input class="hidden" name="language" value="language">
@@ -30,7 +32,7 @@
     </div>
     <div class="row">
     <form method="get">
-   <p>Выбрать разметчика
+   <p>{% trans 'Choose annotator:' %}
         {% for u in users %}
         <label class="radio-inline">
         <input class="hidden" name="user" value="user">
@@ -45,7 +47,7 @@
 <div class="row">
 <div class="col-md-4">
     <div class="panel panel-primary">
-    <div class="panel-heading">Not annotated</div>
+    <div class="panel-heading">{% trans 'Not annotated' %}</div>
       <div class="panel-body" style="min-height: 450px; max-height: 450px; overflow-y: scroll;">
   
 {#      <div>#}
@@ -115,7 +117,7 @@
 </div>
 <div class="col-md-4">
 <div class="panel panel-primary">
-    <div class="panel-heading">Annotated, not checked</div>
+    <div class="panel-heading">{% trans 'Annotated, not checked' %}</div>
       <div class="panel-body" style="min-height: 450px; max-height: 450px; overflow-y: scroll;">
           <div>
             <a href=".toggle-folder-2-1" data-toggle="collapse" class="label label-warning">
@@ -167,7 +169,7 @@
 </div>
 <div class="col-md-4">
 <div class="panel panel-primary">
-    <div class="panel-heading">Annotated, checked</div>
+    <div class="panel-heading">{% trans 'Annotated, checked' %}</div>
       <div class="panel-body" style="min-height: 450px; max-height: 450px; overflow-y: scroll;">
           <ol>
     {% for doc in docs %}
