@@ -17,6 +17,8 @@ from annotator.models import Document, Annotation, Sentence, NativeChoices
 
 
 def mark(request, doc_id):
+    if not request.user.is_authenticated():
+        raise PermissionDenied("You do not have permission to perform this action.")
     doc = Document.objects.get(pk=doc_id)
     page, label = request.POST['next'], request.POST['mark']
     if label == 'checked':
@@ -39,6 +41,8 @@ def get_correction(request, doc_id):
 
 
 def handle_upload(request, doc_id):
+    if not request.user.is_authenticated():
+        raise PermissionDenied("You do not have permission to perform this action.")
     page = request.POST['next']
     has_headers = request.POST['has_headers']
     start = 1 if has_headers else 0
@@ -74,8 +78,6 @@ def handle_upload(request, doc_id):
     # except:
     #     a = True
     return redirect(page, alert=a)
-
-
 
 
 class BaseStorageView(View):
@@ -130,6 +132,8 @@ class Root(BaseStorageView):
     http_method_names = ['get']
 
     def get(self, request):
+        if not request.user.is_authenticated():
+            raise PermissionDenied("You do not have permission to view this page.")
         if len(request.GET) < 1:
             doc_list = Document.objects.all()
             return render_to_response('annotate_list.html', {'docs': doc_list, 'langs':NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='')}, context_instance=RequestContext(request))
@@ -211,16 +215,6 @@ class Search(BaseStorageView):
 		}
 
 
-class EditorView(TemplateView):
-    template_name = 'annotator/editor.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(EditorView, self).get_context_data(**kwargs)
-        context['storage_api_base_url'] = reverse('annotator.root')[0:-1]  # chop off trailing slash
-        context['document'] = get_object_or_404(Document, id=kwargs['doc_id'])
-        context['sents'] = Sentence.objects.filter(doc_id=kwargs['doc_id'])
-        return context
-
 class EditorView2(TemplateView):
     template_name = 'annotator/viewtest.html'
     jquery = """jQuery(function ($) {
@@ -230,6 +224,12 @@ class EditorView2(TemplateView):
                           annotationData: {'document': ***},
                           loadFromSearch: {'document': ***}});
                     });"""
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated():
+            raise PermissionDenied("You do not have permission to view this page.")
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
         context = super(EditorView2, self).get_context_data(**kwargs)
@@ -242,3 +242,5 @@ class EditorView2(TemplateView):
         context['data'] = [(d1,s1)]
         context['doc_id'] = kwargs['doc_id']
         return context
+
+

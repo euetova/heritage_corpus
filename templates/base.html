@@ -151,7 +151,7 @@
                 {% endif %}
                   <li class="divider"></li>
                 <li>
-                    <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+                    <a href="{% url 'admin:logout' %}?next=/RLC">{% trans 'Log out' %}</a>
                 </li>
             {% endblock %}
           </ul>
@@ -161,7 +161,7 @@
         {% endif %}
     {% if not user.is_authenticated %}
         <ul class="nav navbar-nav navbar-right">
-        <li><a href="/heritage_corpus/admin/login/?next={{ request.get_full_path }}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
+        <li><a href="{% url 'admin:login' %}?next=/RLC"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
         </ul>
     {% endif %}
     <ul class="nav navbar-nav navbar-right">

@@ -31,7 +31,7 @@ class DocumentAdmin(admin.ModelAdmin):
     ]
 
     list_display = ('title', 'subcorpus', 'author', 'gender', 'native', 'language_background', 'level', 'mode', 'created', 'annotated', 'checked', 'fullmeta')
-    list_filter = ['fullmeta', 'gender', 'annotated', 'checked', 'subcorpus', 'native', 'language_background', 'course', 'genre']
+    list_filter = ['fullmeta', 'gender', 'annotated', 'checked', 'level', 'subcorpus', 'native', 'language_background', 'course', 'genre']
 
 
 class AnnotationAdmin(admin.ModelAdmin):
@@ -67,9 +67,9 @@ class TokenAdmin(admin.ModelAdmin):
 
 learner_admin = LearnerCorpusAdminSite(name='admin')
 learner_admin.register(Document, DocumentAdmin)
-learner_admin.register(Annotation, AnnotationAdmin)
-learner_admin.register(Sentence)
-learner_admin.register(Token, TokenAdmin)
+# learner_admin.register(Annotation, AnnotationAdmin)
+# learner_admin.register(Sentence)
+# learner_admin.register(Token, TokenAdmin)
 # learner_admin.register(Morphology, MorphAdmin)
 learner_admin.register(Article, ArticleAdmin)
 learner_admin.register(Section, SectionAdmin)

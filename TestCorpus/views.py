@@ -7,13 +7,13 @@ from annotator.models import Document, Sentence, Annotation, Token, Morphology
 from annotator.models import NativeChoices, BackgroundChoices, GenderChoices, ModeChoices
 from django.views.generic.base import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from forms import QueryForm
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseForbidden
 from django.views.generic import View
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.template import *
 from search import *
@@ -53,6 +53,7 @@ def download_file(request, doc_id, doc_type):
         response['Content-Disposition'] = 'attachment; filename="tokens_text_%s.txt"' %doc_id
         return response
 
+
 class Struct:
     def __init__(self, **values):
         vars(self).update(values)
@@ -68,6 +69,7 @@ class Index(View):
         page = 'simple/' + page + '.html'
         return render_to_response(page, {'docs': doc_list}, context_instance=RequestContext(request))
 
+
 class PopUp(View):
 
     def get(self, request, page):
@@ -81,8 +83,8 @@ class Search(Index):
     # todo write search
     def get(self, request, page):  # page does nothing here, just ignore it
         if len(request.GET) < 1:
-            QueryFormset = formset_factory(QueryForm, extra=2)
-            return render_to_response('search.html', {'form': QueryFormset},
+            # QueryFormset = formset_factory(QueryForm, extra=2)
+            return render_to_response('search.html',
                                       context_instance=RequestContext(request))
         else:
             # print request.GET

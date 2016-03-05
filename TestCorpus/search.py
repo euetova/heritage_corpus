@@ -130,7 +130,16 @@ def get_subcorpus(query):
             req += 'AND '+ one[0]
         else:
             req += 'AND (' + ' OR '.join(one) + ')'
-    # with codecs.open('s.txt', 'w', encoding='utf-8') as f:
+    level = query.getlist(u'level[]')
+    if level != []:
+        one = []
+        for l in level:
+            one.append('level="'+ l.encode('utf-8') +'"')
+        if len(one) == 1:
+            req += 'AND '+ one[0]
+        else:
+            req += 'AND (' + ' OR '.join(one) + ')'
+    # with codecs.open('home/elmira/heritage_corpus/tempfiles/s.txt', 'w', encoding='utf-8') as f:
     #     f.write(req)
     db = Database()
     docs = [str(i[0]) for i in db.execute(req)]

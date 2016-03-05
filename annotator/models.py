@@ -18,8 +18,11 @@ ModeChoices = ((u'п', _(u'written')), (u'у', _(u'oral')))
 GenderChoices = ((u'ж', _(u'female')), (u'м', _(u'male')))
 BackgroundChoices = ((u'HL', _(u'heritage')), (u'FL', _(u'foreign')))
 
+
 class Document(models.Model):
-    """A document being annotated"""
+    """
+    Stores a single text, related to :model:`auth.User`.
+    """
     owner = models.ForeignKey(User, blank=True, null=True, verbose_name=_('owner'))
     created = models.DateTimeField(auto_now_add=True, db_index=True)
     title = models.CharField(max_length=250, db_index=True, null=True, blank=True, editable=True, verbose_name=_('название'))
@@ -129,6 +132,7 @@ class Document(models.Model):
 
 
 class Sentence(models.Model):
+    """Stores a single sentence, related to :model:`annotator.Document`."""
     text = models.TextField()
     doc_id = models.ForeignKey(Document)
     num = models.IntegerField()
@@ -146,6 +150,7 @@ class Sentence(models.Model):
 
 
 class Annotation(models.Model):
+    """Stores a single annotation, related to :model:`annotator.Document` and :model:`auth.User`."""
     # taken from Django-Annotator-Store
     owner = models.ForeignKey(User, db_index=True, blank=True, null=True)
     document = models.ForeignKey(Sentence, db_index=True)
@@ -330,6 +335,7 @@ class Annotation(models.Model):
 
 
 class Token(models.Model):
+    """Stores a single token, related to :model:`annotator.Document` and :model:`annotator.Sentence`."""
     token = models.CharField(max_length=200, db_index=True)
     doc = models.ForeignKey(Document)
     sent = models.ForeignKey(Sentence)
@@ -348,6 +354,7 @@ class Token(models.Model):
 
 
 class Morphology(models.Model):
+    """Stores morphological data, related to :model:`annotator.Token`."""
     # stupid class name, will change it someday
     token = models.ForeignKey(Token)
     lem = models.CharField(max_length=200, db_index=True)
