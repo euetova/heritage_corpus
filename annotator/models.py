@@ -212,7 +212,19 @@ class Sentence(models.Model):
 
 
 class Annotation(models.Model):
-    """Stores a single annotation, related to :model:`annotator.Document` and :model:`auth.User`."""
+    """Хранит информацию о разметке.
+
+    Поля аннотации:
+    owner - пользователь, который создал аннотацию
+    document - предложение, к которому была добавлена аннотация, связано с :model:`annotator.Sentence`
+    guid - уникальный id
+    created - дата и время, когда аннотация была создана
+    updated - дата и время последнего редактирования данной аннотации
+    data - информация о разметка для javascript в формате json
+    tag - приписанные тэги в строку, через запятую
+    start - номер слова предложения (начиная с 1), с которого начинается выделение
+    end - номер слова предложения (начиная с 1), которым заканчивается выделение
+    """
     # taken from Django-Annotator-Store
     owner = models.ForeignKey(User, db_index=True, blank=True, null=True)
     document = models.ForeignKey(Sentence, db_index=True)
@@ -239,6 +251,18 @@ class Annotation(models.Model):
         return True
 
     def get_sent_annotations(self, id):
+        """
+        Получает из базы данных все исправления к предложению с заданным id.
+
+        :param id: номер предложения в базе данных
+        :return: массив аннотаций к предложению
+        Каждая аннотация добавляется в виде такого кортежа:
+            (начало исправления INTEGER, конец исправления INTEGER,
+            текст исправления, приписанные тэги в строку через запятую).
+        Если исправления нет (а только приписан тэг\комментарий), то аннотация в массив не добавляется.
+        Если в списке тэгов аннотации есть тэг "Del", обозначающий лишнее слово, то аннотация в массив добавляется
+        (т.е. пустая строка исправления в этом случае сама по себе является исправлением).
+        """
         db = Database()
         req = 'SELECT `tag`, `start`, `end`, `data` FROM  annotator_annotation WHERE document_id=%d' %id
         arr = []
@@ -251,11 +275,16 @@ class Annotation(models.Model):
         return arr
 
     def make_correction(self, sentence, remarks):
-        '''
-        :param sentence: предложение
+        """
+        Получает предложение и список исправлений, возвращает исправленное предложение.
+
+        :param sentence: предложение (строка)
         :param remarks: массив кортежей, каждый кортеж = одно исправление
-        :return:
-        '''
+        :return: исправленное предложение (строка)
+
+        Вокруг исправлений вставляются тэги '<span class="correction">' и '</span>',
+        чтобы исправление рендерилось на странице с другим форматированием.
+        """
         sentence = sentence.split()
         dictionary = dict()
         for word_num in range(len(sentence)):
@@ -270,11 +299,17 @@ class Annotation(models.Model):
         return s
 
     def make_ortho_correction(self, sentence, remarks):
-        '''
-        :param sentence: предложение
+        """
+        Получает предложение и список исправлений, возвращает предложение,
+        в котором исправлены только орфографические (однословные) ошибки.
+
+        :param sentence: предложение (строка)
         :param remarks: массив кортежей, каждый кортеж = одно исправление
-        :return:
-        '''
+        :return: исправленное предложение (строка)
+
+        Вокруг исправлений вставляются тэги '<span class="correction">' и '</span>',
+        чтобы исправление рендерилось на странице с другим форматированием.
+        """
         ORTHO = ["graph", "hyphen", "space", "ortho", "translit", "misspell", "deriv", "infl", "num", "gender", "morph"]
         sentence = sentence.split()
         dictionary = dict()
@@ -292,6 +327,14 @@ class Annotation(models.Model):
         return s
 
     def save(self, **kwargs):
+        """
+        Сохраняет аннотацию.
+
+        Аннотация сохраняется в базу данных.
+        При сохранении аннотации запускаются make_correction и make_ortho_correction,
+        которые генерируют исправленные версии предложений. Исправленные варианты
+        сохраняются в базу данных.
+        """
         if not self.owner:
             return
         super(Annotation, self).save()
@@ -302,6 +345,14 @@ class Annotation(models.Model):
         sent_obj.save()
 
     def delete(self, **kwargs):
+        """
+        Удаляет аннотацию.
+
+        Аннотация удаляется из базы данных данных.
+        При удалении аннотации запускаются make_correction и make_ortho_correction,
+        которые заново генерируют исправленные версии предложений.
+        Исправленные варианты сохраняются в базу данных.
+        """
         sent_obj, sent_text = self.document, self.document.text
         doc_id = self.document_id
         super(Annotation, self).delete()

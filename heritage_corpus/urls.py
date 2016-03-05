@@ -9,7 +9,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 
 urlpatterns = patterns('',
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(learner_admin.urls)),
     url(r'^(help|rulec)$', Index.as_view(), name='main.static'),
     url(r'^(search)/$', Search.as_view(), name='main.search'),
