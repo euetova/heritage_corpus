@@ -54,6 +54,10 @@ class ShowSentence:
 
 class SentBag:
     def __init__(self, e, l):
+        """
+        e - словарь, где ключи - номера предложений, а значения массивы номеров слов в предложении,
+        которые вероятно нужно рендрить жирным
+        """
         self.dic = {key: Sent(e[key], []) for key in e}
 
     def update(self, e, fr, t):
@@ -96,6 +100,12 @@ class SentBag:
 
 
 class Sent:
+    """
+    Предложение с атрибутами:
+    bold_w -
+    poss_w -
+    eds -
+    """
     def __init__(self, b, p):
         self.bold_w = b
         self.poss_w = p
@@ -196,12 +206,12 @@ def exact_search(word, docs, flag, expand, page, per_page):
 def exact_full_search(word, docs, flag, expand, page, per_page):
     db = Database()
     s = word
-    words = word.split()
+    words = word.split(' ')
     jq = []
     a = {}
     for wn in range(len(words)):
-        word = words[wn]
-        req3 = 'SELECT sent_id, num FROM `annotator_token` WHERE token="'+ word +'" '
+        w = words[wn]
+        req3 = 'SELECT sent_id, num FROM `annotator_token` WHERE token="'+ w +'" '
         if flag:
             req3 += 'AND doc_id IN ('+','.join(docs) + ')'
         rows = db.execute(req3)
@@ -212,7 +222,7 @@ def exact_full_search(word, docs, flag, expand, page, per_page):
         if not a:
             a = SentBag(e, len(words))
         else:
-            fr, t = wn+1, wn+1
+            fr, t = wn, wn
             a.update(e, fr, t)
     a = a.finalize(len(words))
     sent_list = [ShowSentence(i, a[i], expand) for i in a]
@@ -526,6 +536,7 @@ def bincode(a,b,c,d):
     for i in [a,b,c,d]:
         s += '1' if i else '0'
     return s
+
 
 def collect_full_data(arr):
     db = Database()

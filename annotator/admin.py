@@ -1,3 +1,6 @@
+# coding=utf-8
+u"""Настройки панели администратора"""
+
 from django.contrib import admin
 from annotator.models import Document, Annotation, Sentence, Token, Morphology
 from django.contrib.admin import AdminSite
@@ -5,33 +8,44 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from news.models import Article, Section
 
+
 class LearnerCorpusAdminSite(AdminSite):
     site_header = 'Russian Heritage Corpus'
     site_title = 'Admin'
     index_title = 'RULEC'
 
 
+# отображение новостных статей
 class ArticleAdmin(admin.ModelAdmin):
-    fields = ['date', 'text_eng', 'text_rus']
-    list_display = ('date', 'text_eng', 'text_rus', 'created')
+    fields = ['date', 'text_eng', 'text_rus']  # в панели редактирования
+    list_display = ('date', 'text_eng', 'text_rus', 'created')  # в таблице
 
 
+# отображение секций стартовой страницы
 class SectionAdmin(admin.ModelAdmin):
-    fields = ['number', 'header_eng', 'text_eng', 'header_rus', 'text_rus']
-    list_display = ('number', 'header_eng', 'text_eng', 'header_rus', 'text_rus')
+    fields = ['number', 'header_eng', 'text_eng', 'header_rus', 'text_rus']  # в панели редактирования
+    list_display = ('number', 'header_eng', 'text_eng', 'header_rus', 'text_rus')  # в таблице
 
 
+# отображение информации о текстах корпуса
 class DocumentAdmin(admin.ModelAdmin):
-    fieldsets = [
+    fieldsets = [  # в панели редактирования
         (None,               {'fields': ['owner', 'body', 'filename']}),
-        ('Author', {'fields': [('author', 'gender', 'course', 'language_background'), ('student_code', 'level', 'native'), ( 'fullmeta')]}),
+        ('Author', {'fields':
+                        [
+                            ('author', 'gender', 'course', 'language_background'),
+                            ('student_code', 'level', 'native'),
+                            ( 'fullmeta')
+                        ]
+                    }
+        ),
         ('Date', {'fields': [('date1')]}),
         ('Text', {'fields': [('genre', 'text_type', 'annotation', 'time_limit', 'mode', 'subcorpus')]}),
         ('Autocompletion', {'fields': [('annotated', 'checked')], 'classes': [('collapse')]}),
     ]
 
-    list_display = ('title', 'subcorpus', 'author', 'gender', 'native', 'language_background', 'level', 'mode', 'created', 'annotated', 'checked', 'fullmeta')
-    list_filter = ['fullmeta', 'gender', 'annotated', 'checked', 'level', 'subcorpus', 'native', 'language_background', 'course', 'genre']
+    list_display = ('title', 'subcorpus', 'author', 'gender', 'native', 'language_background', 'level', 'mode', 'created', 'annotated', 'checked', 'fullmeta')  # в таблице
+    list_filter = ['fullmeta', 'gender', 'annotated', 'checked', 'level', 'subcorpus', 'native', 'language_background', 'course', 'genre']  # фильтры справа в панели редактирования
 
 
 class AnnotationAdmin(admin.ModelAdmin):

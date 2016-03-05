@@ -103,7 +103,7 @@ class Search(Index):
             page = int(page) if page else 1
             expand = int(query.get(u'expand')[-1])
             if query["exact_word"] != '':
-                jq, sent_list, word, res_docs, res_num = exact_search(request.GET["exact_word"].lower().encode('utf-8'), subcorpus, flag, expand, page, per_page)
+                jq, sent_list, word, res_docs, res_num = exact_full_search(request.GET["exact_word"].lower().encode('utf-8'), subcorpus, flag, expand, page, per_page)
 
             else:
                 # QueryFormset = formset_factory(QueryForm)

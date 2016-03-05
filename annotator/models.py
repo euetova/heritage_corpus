@@ -1,4 +1,5 @@
 # coding=utf-8
+u"""Модели, используемые в корпусе: Document, Sentence, Token, Annotation, Morphology"""
 
 # Django modules
 from django.db import models
@@ -32,7 +33,7 @@ BackgroundChoices = ((u'HL', _(u'heritage')), (u'FL', _(u'foreign')))
 
 
 class Document(models.Model):
-    """
+    u"""
     Хранит информацию об одном тексте.
 
     Свойства текста:
@@ -88,7 +89,7 @@ class Document(models.Model):
     time_limit = models.CharField(max_length=100, null=True, blank=True, verbose_name=_('time limit'))
     native = models.CharField(max_length=10, null=True, blank=True, choices=NativeChoices, db_index=True, verbose_name=_('dominant language'))
     fullmeta = models.NullBooleanField(null=True, blank=True, verbose_name=_('full metadata'))
-
+    # todo update fullmeta in save()
     # needed for general corpus statistics
     words = models.IntegerField(editable=True, null=True, blank=True, verbose_name=_('words'))
     sentences = models.IntegerField(editable=False, null=True, blank=True, verbose_name=_('sentences'))
@@ -106,7 +107,7 @@ class Document(models.Model):
         return self.title + ', ' + self.author if self.title else '- , ' + self.author
 
     def save(self, **kwargs):
-        """
+        u"""
         Сохраняет текст в базу данных.
 
         Если текст уже был ранее загружен в базу данных (т.е. пользователь редактирует старый текст),
@@ -136,7 +137,7 @@ class Document(models.Model):
             self.handle_sentences()
 
     def handle_sentences(self):
-        """Отправляет текст в майстем и раскладывает результат в ячейки базы данных."""
+        u"""Отправляет текст в майстем и раскладывает результат в ячейки базы данных."""
         self.words, text = mystem(self.body)
         self.sentences = len(text)
         super(Document, self).save()
@@ -183,7 +184,7 @@ class Document(models.Model):
 
 
 class Sentence(models.Model):
-    """
+    u"""
     Хранит одно предложение.
 
     Свойства предложения:
@@ -195,6 +196,7 @@ class Sentence(models.Model):
     correct2 - предложение с исправлениями орфографических ошибок
     temp - не нужное поле (УДАЛИТЬ!)
     """
+    # todo Удалить temp
     text = models.TextField()
     doc_id = models.ForeignKey(Document)
     num = models.IntegerField()
@@ -212,7 +214,7 @@ class Sentence(models.Model):
 
 
 class Annotation(models.Model):
-    """Хранит информацию о разметке.
+    u"""Хранит информацию о разметке.
 
     Поля аннотации:
     owner - пользователь, который создал аннотацию
@@ -251,7 +253,7 @@ class Annotation(models.Model):
         return True
 
     def get_sent_annotations(self, id):
-        """
+        u"""
         Получает из базы данных все исправления к предложению с заданным id.
 
         :param id: номер предложения в базе данных
@@ -275,7 +277,7 @@ class Annotation(models.Model):
         return arr
 
     def make_correction(self, sentence, remarks):
-        """
+        u"""
         Получает предложение и список исправлений, возвращает исправленное предложение.
 
         :param sentence: предложение (строка)
@@ -299,7 +301,7 @@ class Annotation(models.Model):
         return s
 
     def make_ortho_correction(self, sentence, remarks):
-        """
+        u"""
         Получает предложение и список исправлений, возвращает предложение,
         в котором исправлены только орфографические (однословные) ошибки.
 
@@ -327,7 +329,7 @@ class Annotation(models.Model):
         return s
 
     def save(self, **kwargs):
-        """
+        u"""
         Сохраняет аннотацию.
 
         Аннотация сохраняется в базу данных.
@@ -345,7 +347,7 @@ class Annotation(models.Model):
         sent_obj.save()
 
     def delete(self, **kwargs):
-        """
+        u"""
         Удаляет аннотацию.
 
         Аннотация удаляется из базы данных данных.
@@ -370,14 +372,23 @@ class Annotation(models.Model):
              }
 
         d.update(json.loads(self.data))
-
         return d
 
     def check_fields(self, start, end, startOffset, endOffset, quote, sent):
-        # print start, end, sent
+        """
+        Проверяет данные о разметке, исправляет их при необходимости.
+
+        :param start: начало аннотации (номер слова от начала предложения считая от 1)
+        :param end: конец аннотации (номер слова от начала предложения считая от 1)
+        :param startOffset: номер символа от начала элемента span, на котором началась аннотация
+        :param endOffset: номер символа от начала элемента span, на котором завершилась аннотация
+        :param quote: выделенный текст
+        :param sent: номер предложения, которому приписана аннотация
+        :return: начало аннотации, конец аннотации, оффсет начала, оффсет конца
+        """
+        # todo дописать в докстринг зачем это все
         q_enc = quote.encode('utf-8')
         q_len = len(q_enc.split(' '))
-        # print (q_enc.split(' ')[-1])
         if start != '':
             start = bold_regex.sub('', start)
             self.start = int(span_regex.search(start).group(1))
@@ -397,7 +408,6 @@ class Annotation(models.Model):
                 self.start = int(span_regex.search(start).group(1))
             else:
                 sent = Sentence.objects.get(id=sent).text.encode('utf-8')
-                # print sent
                 s = re.split(q_enc, sent)
                 for i in s: print i
                 part = len(re.split(q_enc, sent)[0].strip().split(' '))
@@ -407,7 +417,6 @@ class Annotation(models.Model):
                 startOffset = 0
                 end = '/span['+str(self.end)+']'
                 endOffset = len(q_enc.split(' ')[-1].decode('utf-8').strip(' ,:;!?.'))
-                # print (q_enc.split(' ')[-1]), endOffset
         return start, end, startOffset, endOffset
 
     def update_from_json(self, new_data):
@@ -421,7 +430,6 @@ class Annotation(models.Model):
             d[k] = v
 
         quote = d['quote']
-        # print quote, len(d['quote'])
         start, end, startOffset, endOffset = d["ranges"][0]["start"], d["ranges"][0]["end"], d["ranges"][0]["startOffset"], d["ranges"][0]["endOffset"]
         start, end, startOffset, endOffset = self.check_fields(start, end, startOffset, endOffset, quote, self.document.id)
         d["ranges"][0]["start"] = start
@@ -429,9 +437,7 @@ class Annotation(models.Model):
         d["ranges"][0]["startOffset"] = startOffset
         d["ranges"][0]["endOffset"] = endOffset
         self.data = json.dumps(d)
-        # print self.data
         self.tag = ', '.join(d["tags"])
-        # print self.start, self.end
 
     @staticmethod
     def as_list(qs=None, user=None):
@@ -448,7 +454,19 @@ class Annotation(models.Model):
 
 
 class Token(models.Model):
-    """Stores a single token, related to :model:`annotator.Document` and :model:`annotator.Sentence`."""
+    u"""Хранит информацию о токенах.
+
+    Поля токенов:
+    token - само слово
+    doc - номер текста, к которому относится слово
+    sent - номер предложения, к которому относится слово
+    num - номер слова в предложении
+    punctl - пунктуация слева
+    punctr - пунктуация справа
+    sent_pos - позиция в предложении ('bos' - в начале, 'eos' - в конце, '' - в середине)
+    corr - кажется, это что-то ненужное
+    """
+    # todo удалить corr
     token = models.CharField(max_length=200, db_index=True)
     doc = models.ForeignKey(Document)
     sent = models.ForeignKey(Sentence)
@@ -467,8 +485,16 @@ class Token(models.Model):
 
 
 class Morphology(models.Model):
-    """Stores morphological data, related to :model:`annotator.Token`."""
+    u"""Хранит информацию о морфологических разборах.
+
+    Поля разбора:
+    token - номер токена, к которому относится разбор
+    lem - лемма
+    lex - часть речи
+    gram - все прочие грамматические характеристики
+    """
     # stupid class name, will change it someday
+    # todo write disambiguation
     token = models.ForeignKey(Token)
     lem = models.CharField(max_length=200, db_index=True)
     lex = models.CharField(max_length=200, db_index=True)

@@ -1,5 +1,5 @@
 """
-WSGI config for learner_corpus project.
+WSGI config for heritage_corpus project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

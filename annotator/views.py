@@ -1,22 +1,36 @@
 # coding=utf-8
+
+# Standard modules
+import json
+import re
+import uuid
+
+# Django modules
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseForbidden
 from django.views.generic import View
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404, render_to_response, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import permission_required
 from django.conf import settings
 from django.template import *
 from django.contrib.auth.models import User
-from TestCorpus.db_utils import Database
-import json, re, codecs, uuid
 
+# My models
+from TestCorpus.db_utils import Database
 from annotator.models import Document, Annotation, Sentence, NativeChoices
 
 
 def mark(request, doc_id):
+    """
+    Отмечает текст (не) аннотированным/проверенным.
+
+    :param request: информация о запросе
+    :param doc_id: номер текста в базе данных
+    :return: HTTPResponse - перенаправляет на страницу, с которой пришел запрос
+
+     Функция меняет запись в ячейках базы данных Document.annotated и Document.checked.
+    """
     if not request.user.is_authenticated():
         raise PermissionDenied("You do not have permission to perform this action.")
     doc = Document.objects.get(pk=doc_id)
@@ -34,6 +48,13 @@ def mark(request, doc_id):
 
 
 def get_correction(request, doc_id):
+    """
+    Получает из базы данных исправленные варианты предложения с заданным id.
+
+    :param request: информация о запросе
+    :param doc_id: номер предложения в базе данных
+    :return: HTTPResponse - json с двумя строками, который затем передается в javascript
+    """
     db = Database()
     req = 'SELECT correct, correct2 FROM annotator_sentence WHERE id=%s' %doc_id
     s = list(db.execute(req)[0])
