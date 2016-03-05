@@ -43,7 +43,7 @@
 </div>
     </div>
     {% endif%}
-    <div class="col-md-4">
+    <div class="col-md-6">
     <h2>{% trans 'Raw counts' %}</h2>
 <table class="table table-condensed table-hover table-bordered">
   <tr>
@@ -80,26 +80,26 @@
 
     </div>
 
-     <div class="col-md-4">
-    <h2>{% trans 'Genre counts' %}</h2>
-    <table class="table table-condensed table-hover table-bordered">
-    {% for key, value in genres.iteritems %}
-        <tr>
-        {% if key == '' %}
-            <td>{% trans 'unknown' %} </td>
-        {% endif %}
-        {% if key != '' %}
-            <td>{{ key }} </td>
-        {% endif %}
-      <td>{{ value }}</td>
-  </tr>
- {% endfor %}
-</table>
+{#     <div class="col-md-4">#}
+{#    <h2>{% trans 'Genre counts' %}</h2>#}
+{#    <table class="table table-condensed table-hover table-bordered">#}
+{#    {% for key, value in genres.iteritems %}#}
+{#        <tr>#}
+{#        {% if key == '' %}#}
+{#            <td>{% trans 'unknown' %} </td>#}
+{#        {% endif %}#}
+{#        {% if key != '' %}#}
+{#            <td>{{ key }} </td>#}
+{#        {% endif %}#}
+{#      <td>{{ value }}</td>#}
+{#  </tr>#}
+{# {% endfor %}#}
+{#</table>#}
+{##}
+{##}
+{#</div>#}
 
-
-</div>
-
-    <div class="col-md-4">
+    <div class="col-md-6">
         <h2>{% trans 'Language background' %}</h2>
     <table class="table table-condensed table-hover table-bordered">
     {% for key, value in lb.iteritems %}

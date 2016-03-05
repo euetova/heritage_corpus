@@ -2,11 +2,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-
+from TestCorpus.db_utils import Database
 import uuid
 import json, codecs
 from utils import *
 regSpan= re.compile('[.?,!:«(;#№–/...)»-]*<span .*?</span>[.?,!:«(;#№–/...)»-]*', flags=re.U | re.DOTALL)
+regWord = re.compile('([.?,!:«(;#№–/...)»-]*)(\\w+)([.?,!:«(;#№–/...)»-]*)', flags=re.U | re.DOTALL)
 bold_regex = re.compile('/b\\[(\\d+)\\]')
 span_regex = re.compile('span\\[(\\d+)\\]')
 
@@ -133,7 +134,7 @@ class Sentence(models.Model):
     num = models.IntegerField()
     tagged = models.TextField()  # stores the html-piece
     correct = models.TextField()
-    # correct2 = models.TextField()
+    correct2 = models.TextField()
     temp = models.TextField(null=True, blank=True)  # stores the html-piece
 
     def __unicode__(self):
@@ -170,44 +171,77 @@ class Annotation(models.Model):
             return False
         return True
 
+    def get_sent_annotations(self, id):
+        db = Database()
+        req = 'SELECT `tag`, `start`, `end`, `data` FROM  annotator_annotation WHERE document_id=%d' %id
+        arr = []
+        rows = db.execute(req)
+        for row in rows:
+            d = json.loads(row[3])
+            corr = d['corrs']
+            if corr != '' or 'Del' in row[0]:
+                arr.append((int(row[1]), int(row[2]), corr, row[0]))
+        return arr
+
+    def make_correction(self, sentence, remarks):
+        '''
+        :param sentence: предложение
+        :param remarks: массив кортежей, каждый кортеж = одно исправление
+        :return:
+        '''
+        sentence = sentence.split()
+        dictionary = dict()
+        for word_num in range(len(sentence)):
+            dictionary[word_num] = sentence[word_num]
+        for el in remarks:
+            corr_start, corr_end, corr, tag = el
+            r = range(corr_start-1, corr_end)
+            dictionary[r[0]] = '<span class="correction">' + corr + '</span>'
+            for i in r[1:]:
+                dictionary[i] = ''
+        s = ' '.join(dictionary[i] for i in sorted(dictionary) if dictionary[i] != '')
+        return s
+
+    def make_ortho_correction(self, sentence, remarks):
+        '''
+        :param sentence: предложение
+        :param remarks: массив кортежей, каждый кортеж = одно исправление
+        :return:
+        '''
+        ORTHO = ["graph", "hyphen", "space", "ortho", "translit", "misspell", "deriv", "infl", "num", "gender", "morph"]
+        sentence = sentence.split()
+        dictionary = dict()
+        for word_num in range(len(sentence)):
+            dictionary[word_num] = sentence[word_num]
+        for el in remarks:
+            corr_start, corr_end, corr, tag = el
+            tags = [i.lower().strip() for i in tag.split(',')]
+            if any(i in ORTHO for i in tags):
+                r = range(corr_start-1, corr_end)
+                dictionary[r[0]] = '<span class="correction">' + corr + '</span>'
+                for i in r[1:]:
+                    dictionary[i] = ''
+        s = ' '.join(dictionary[i] for i in sorted(dictionary) if dictionary[i] != '')
+        return s
+
     def save(self, **kwargs):
-        # f = codecs.open('annotation.txt', 'a', 'utf-8')
         if not self.owner:
             return
         super(Annotation, self).save()
-        sent, tagged = self.document, self.document.correct
-        # f.write(tagged)
-        # f.write('\r\n')
-        d = json.loads(self.data)
-        corr, start, end = d['corrs'], \
-                           int(d["ranges"][0]['start'].replace('/span[', '').replace(']', '')), \
-                           int(d["ranges"][0]['end'].replace('/span[', '').replace(']', ''))
-        # f.write(str(start)+' ' + str(end) + '\r\n')
-        tagged = regSpan.findall(tagged)
-        corr = ['<span class="token green" title="">' + corr + '</span>'] + (end-start) * ['<span class="token green" title=""></span>']
-        # f.write(' '.join(corr) + '\r\n')
-        if start == end:
-            tagged[start-1:start] = corr
-        else:
-            tagged[start-1:end+1] = corr
-        sent.correct = ' '.join(tagged)
-        # f.write(sent.correct)
-        # f.write('\r\n')
-        # f.close()
-        sent.save()
+        sent_obj, sent_text = self.document, self.document.text
+        remarks = self.get_sent_annotations(self.document_id)
+        sent_obj.correct = self.make_correction(sent_text, remarks)
+        sent_obj.correct2 = self.make_ortho_correction(sent_text, remarks)
+        sent_obj.save()
 
     def delete(self, **kwargs):
-        sent, tagged, correct = self.document, self.document.tagged, self.document.correct
-        d = json.loads(self.data)
-        corr, start, end = d['corrs'], \
-                           int(d["ranges"][0]['start'].replace('/span[', '').replace(']', '')), \
-                           int(d["ranges"][0]['end'].replace('/span[', '').replace(']', ''))
-        tagged2 = regSpan.findall(tagged)
-        correct2 = regSpan.findall(correct)
-        correct2[start-1:end] = tagged2[start-1:end]
-        sent.correct = ' '.join(correct2)
-        sent.save()
+        sent_obj, sent_text = self.document, self.document.text
+        doc_id = self.document_id
         super(Annotation, self).delete()
+        remarks = self.get_sent_annotations(doc_id)
+        sent_obj.correct = self.make_correction(sent_text, remarks)
+        sent_obj.correct2 = self.make_ortho_correction(sent_text, remarks)
+        sent_obj.save()
 
     def as_json(self, user=None):
         d = {"id": self.guid,
@@ -257,7 +291,6 @@ class Annotation(models.Model):
                 endOffset = len(q_enc.split(' ')[-1].decode('utf-8').strip(' ,:;!?.'))
                 # print (q_enc.split(' ')[-1]), endOffset
         return start, end, startOffset, endOffset
-
 
     def update_from_json(self, new_data):
         d = json.loads(self.data)

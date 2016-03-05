@@ -33,9 +33,9 @@ def mark(request, doc_id):
 
 def get_correction(request, doc_id):
     db = Database()
-    req = 'SELECT correct FROM annotator_sentence WHERE id=%s' %doc_id
-    s = db.execute(req)[0][0]
-    return HttpResponse(s)
+    req = 'SELECT correct, correct2 FROM annotator_sentence WHERE id=%s' %doc_id
+    s = list(db.execute(req)[0])
+    return HttpResponse(json.dumps(s), content_type="application/json")
 
 
 def handle_upload(request, doc_id):

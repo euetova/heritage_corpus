@@ -10,7 +10,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = patterns('',
     url(r'^admin/', include(learner_admin.urls)),
-    url(r'^(helprulec)$', Index.as_view(), name='main.static'),
+    url(r'^(help|rulec)$', Index.as_view(), name='main.static'),
     url(r'^(search)/$', Search.as_view(), name='main.search'),
     url(r'^(news)$', NewsView.as_view(), name='news'),
     url(r'^$', SectionView.as_view(), name='start_page'),

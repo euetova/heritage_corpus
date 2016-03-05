@@ -102,7 +102,7 @@
         <ol>
             {% for doc in docs %}
                 {% if not doc.annotated %}
-                   {% if doc.subcorpus == '' %}
+                   {% if doc.subcorpus != 'RULEC' and doc.subcorpus != 'HSE' %}
                     <li>
                         {{ doc.id }}. <a href="document/{{ doc.id }}/edittest"> {{ doc }} </a>
                     </li>
@@ -155,7 +155,7 @@
               <!--</li> folder item 22</li>-->
                 {% for doc in docs %}
                     {% if doc.annotated and not doc.checked %}
-                        {% if doc.subcorpus == '' %}
+                        {% if doc.subcorpus != 'RULEC' and doc.subcorpus != 'HSE' %}
                         <li>
                             {{ doc.id }}. <a href="document/{{ doc.id }}/edittest">{{ doc }} </a>
                         </li>

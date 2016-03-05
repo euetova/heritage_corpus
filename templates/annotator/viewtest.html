@@ -33,8 +33,8 @@ $(document).ready(function(){
  function search(id) {
 $.get("/RLC/document-annotations/get_correction_by_id/"+id,
                     function (data) {
-                        $("#"+id+"+").html(data);
-                        $("#second"+id).html(data);
+                        $("#"+id+"+").html(data[1]);
+                        $("#second"+id).html(data[0]);
                     });
             return false;
         }
