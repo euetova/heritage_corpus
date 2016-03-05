@@ -1,16 +1,28 @@
 # coding=utf-8
+
+# Django modules
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+
+# My modules
 from TestCorpus.db_utils import Database
-import uuid
-import json, codecs
 from utils import *
-regSpan= re.compile('[.?,!:«(;#№–/...)»-]*<span .*?</span>[.?,!:«(;#№–/...)»-]*', flags=re.U | re.DOTALL)
+
+# Standard modules
+import json
+
+# находит тэги span с окружающими знаками препинания
+regSpan = re.compile('[.?,!:«(;#№–/...)»-]*<span .*?</span>[.?,!:«(;#№–/...)»-]*', flags=re.U | re.DOTALL)
+
+# находит слово с окружающими знаками препинания
 regWord = re.compile('([.?,!:«(;#№–/...)»-]*)(\\w+)([.?,!:«(;#№–/...)»-]*)', flags=re.U | re.DOTALL)
-bold_regex = re.compile('/b\\[(\\d+)\\]')
+
+# нужно, чтобы добавлять разметку в окне выдачи
+bold_regex = re.compile('/b\\[(\\d+)\\]')  # нужно, чтобы добавлять разметку в окне выдачи
 span_regex = re.compile('span\\[(\\d+)\\]')
 
+# опции для выбора в окне метаразметки
 NativeChoices = ((u'eng', _(u'English')), (u'nor', _(u'Norwegian')), (u'kor', _(u'Korean')),
                  (u'ita', _(u'Italian')), (u'fr', _(u'French')), (u'ger', _(u'German')),
                  (u'ser', _(u'Serbian')))
@@ -21,7 +33,36 @@ BackgroundChoices = ((u'HL', _(u'heritage')), (u'FL', _(u'foreign')))
 
 class Document(models.Model):
     """
-    Stores a single text, related to :model:`auth.User`.
+    Хранит информацию об одном тексте.
+
+    Свойства текста:
+    owner - пользователь, который добавил текст, связан с :models:`auth.User`
+    created - дата и время, когда текст был добавлен
+    title - название текста, генерируется автоматически из жанра, типа текста и курса
+    body - сам текст, если он был добавлен разметчиком вручную;
+        если текст был перезалит из старой платформы, то в этом атрибуте хранится строка "loaded from xml"
+    author - автор текста
+    mode - устный или письменный
+    filename - источник текста
+    subcorpus - название подкорпуса
+    date1 - дата начала написания текста (или первый год в записи учебного года, например, 2010-2011)
+    date2 - дата окончания написания текста (или второй год в записи учебного года, например, 2010-2011)
+    genre - жанр текста
+    gender - пол автора
+    course - курс, в рамках которого текст был задан
+    language_background - русский язык является иностранным или эритажным
+    text_type - тип текста
+    level - уровень
+    annotation - автоматическая или ручная аннотация (осталось от РУЛЕКа)
+    student_code - код студента (возможно он не нужен)
+    time_limit - временные ограничения (осталось от РУЛЕКа)
+    native - родной/доминантный язык автора
+    fullmeta - полностью ли заполнены релевантные поля метаразметки
+    words - количество слов в тексте
+    sentences - количество предложений в тексте
+    date_displayed - отображаемая дата
+    annotated - размечен ли текст
+    checked - проверен ли текст
     """
     owner = models.ForeignKey(User, blank=True, null=True, verbose_name=_('owner'))
     created = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -48,7 +89,7 @@ class Document(models.Model):
     native = models.CharField(max_length=10, null=True, blank=True, choices=NativeChoices, db_index=True, verbose_name=_('dominant language'))
     fullmeta = models.NullBooleanField(null=True, blank=True, verbose_name=_('full metadata'))
 
-    # needed for general corpus statictics
+    # needed for general corpus statistics
     words = models.IntegerField(editable=True, null=True, blank=True, verbose_name=_('words'))
     sentences = models.IntegerField(editable=False, null=True, blank=True, verbose_name=_('sentences'))
     date_displayed = models.CharField(editable=False, max_length=50, null=True, blank=True, verbose_name=_('date displayed'))
@@ -65,6 +106,15 @@ class Document(models.Model):
         return self.title + ', ' + self.author if self.title else '- , ' + self.author
 
     def save(self, **kwargs):
+        """
+        Сохраняет текст в базу данных.
+
+        Если текст уже был ранее загружен в базу данных (т.е. пользователь редактирует старый текст),
+        то в базе данных только обновляется метаинформация.
+        Если добавляется новый текст, то для него генерируется название из метаполей,
+        сам текст обрабатывается майстемом, информация о словах и предложениях записывается
+        в базу и связывается с соответствующей тексту строкой базы данных.
+        """
         handle_sents = False
         if self.id is None:
             handle_sents = True
@@ -83,10 +133,10 @@ class Document(models.Model):
         # we don't want people to change the texts after it has been parsed and loaded to the DB
         # but we want them to be able to edit meta
         if handle_sents:
-            pass
             self.handle_sentences()
 
     def handle_sentences(self):
+        """Отправляет текст в майстем и раскладывает результат в ячейки базы данных."""
         self.words, text = mystem(self.body)
         self.sentences = len(text)
         super(Document, self).save()
@@ -127,12 +177,24 @@ class Document(models.Model):
                 # but still, there must be a better implementation - absolutely not urgent
                 stagged.append(word)
             sent.tagged = ''.join(stagged)
-            sent.correct = sent.tagged
+            sent.correct = sent.text
+            sent.correct2 = sent.text
             sent.save()
 
 
 class Sentence(models.Model):
-    """Stores a single sentence, related to :model:`annotator.Document`."""
+    """
+    Хранит одно предложение.
+
+    Свойства предложения:
+    text - предложение
+    doc_id - номер текста, к которому относится предложение
+    num - номер предложения в тексте
+    tagged - html-код предложения (вместе с морфологическими разборами слов)
+    correct - предложение со всеми исправлениями
+    correct2 - предложение с исправлениями орфографических ошибок
+    temp - не нужное поле (УДАЛИТЬ!)
+    """
     text = models.TextField()
     doc_id = models.ForeignKey(Document)
     num = models.IntegerField()
