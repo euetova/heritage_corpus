@@ -1,7 +1,6 @@
 # coding=utf-8
 u"""Скрипты для обработки текста майстемом."""
 __author__ = 'elmira'
-from heritage_corpus.settings import BASE_DIR
 import uuid
 import re
 import HTMLParser
@@ -9,7 +8,7 @@ import subprocess
 import codecs
 import os
 
-PATH_TO_MYSTEM = BASE_DIR + '/mystem'
+PATH_TO_MYSTEM = '/home/elmira/heritage_corpus/mystem'
 regSe = re.compile(u'<se>(.*?)</se>', flags=re.U | re.DOTALL)  # находит предложение в тэгах <se> </se>
 regWord = re.compile(u'^(.*?)<w>(.*?)(<ana.*/>)?</w>(.*)$', flags=re.U)  # находит слово в тэгах <w> </w>
 regAna = re.compile(u'<ana lex="(.*?)" gr="(.*?)" />', flags=re.U)  # находит разбор в тэгах <ana> </ana>
@@ -40,7 +39,7 @@ def mystem(text):
     """
     # todo почему-то не получается сразу передать текст в майстем.
     # todo приходится сначала записывать текст в файл, читать, и потом удалять его.
-    fname = BASE_DIR + '/tempfiles/temp' + str(uuid.uuid4()) + '.txt'
+    fname = '/home/elmira/heritage_corpus/tempfiles/temp' + str(uuid.uuid4()) + '.txt'
     f = codecs.open(fname, 'w', 'utf-8')
     f.write(text.replace('\r\n', '\r').replace('\n', '\r'))
     f.close()

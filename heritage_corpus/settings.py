@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #  -- coding: utf8 --
 """
-Django settings for heritage_corpus project.
+Django settings for learner_corpus project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
@@ -69,7 +69,7 @@ WSGI_APPLICATION = 'heritage_corpus.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'heritage_corpus',                      # Or path to database file if using sqlite3.
         'USER': 'webcorpo_corpora',                      # Not used with sqlite3.
         'TEST_CHARSET': 'UTF8',
@@ -78,7 +78,6 @@ DATABASES = {
         'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
-# todo test database
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
@@ -90,7 +89,7 @@ LANGUAGES = (
 )
 
 TIME_ZONE = 'UTC'
-# todo set timezone?
+# todo set timezone
 
 USE_I18N = True
 
@@ -132,5 +131,5 @@ TEMPLATE_LOADERS = (
 )
 
 LOCALE_PATHS = (
-    os.path.dirname(BASE_DIR) + '/locale',
+    '/home/elmira/heritage_corpus/locale',
 )
