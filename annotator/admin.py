@@ -2,7 +2,7 @@
 u"""Настройки панели администратора"""
 
 from django.contrib import admin
-from annotator.models import Document, Annotation, Sentence, Token, Morphology
+from annotator.models import Document, Annotation, Sentence, Token, Morphology, Starred
 from django.contrib.admin import AdminSite
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
@@ -20,6 +20,9 @@ class ArticleAdmin(admin.ModelAdmin):
     fields = ['date', 'text_eng', 'text_rus']  # в панели редактирования
     list_display = ('date', 'text_eng', 'text_rus', 'created')  # в таблице
 
+class StarredAdmin(admin.ModelAdmin):
+    fields = ['user', 'sentences']  # в панели редактирования
+    list_display = ('user', 'sentences')  # в таблице
 
 # отображение секций стартовой страницы
 class SectionAdmin(admin.ModelAdmin):
@@ -30,7 +33,7 @@ class SectionAdmin(admin.ModelAdmin):
 # отображение информации о текстах корпуса
 class DocumentAdmin(admin.ModelAdmin):
     fieldsets = [  # в панели редактирования
-        (None,               {'fields': ['owner', 'body', 'filename']}),
+        (None,               {'fields': ['owner', 'title', 'body', 'filename']}),
         ('Author', {'fields':
                         [
                             ('author', 'gender', 'course', 'language_background'),
@@ -81,6 +84,7 @@ class TokenAdmin(admin.ModelAdmin):
 
 learner_admin = LearnerCorpusAdminSite(name='admin')
 learner_admin.register(Document, DocumentAdmin)
+# learner_admin.register(Starred, StarredAdmin)
 # learner_admin.register(Annotation, AnnotationAdmin)
 # learner_admin.register(Sentence)
 # learner_admin.register(Token, TokenAdmin)

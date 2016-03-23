@@ -67,7 +67,7 @@ class Document(models.Model):
     """
     owner = models.ForeignKey(User, blank=True, null=True, verbose_name=_('owner'))
     created = models.DateTimeField(auto_now_add=True, db_index=True)
-    title = models.CharField(max_length=250, db_index=True, null=True, blank=True, editable=True, verbose_name=_('название'))
+    title = models.CharField(max_length=250, db_index=True, null=True, blank=True, editable=True, verbose_name=_('title'))
     body = models.TextField(help_text=_("Paste the text here."), verbose_name=_('text'))  # HTML
     # todo probably should delete this field and create a special form in admin
     author = models.CharField(max_length=100, help_text=_("Enter author's first and/or  second name."), verbose_name=_('author'))
@@ -272,7 +272,7 @@ class Annotation(models.Model):
         for row in rows:
             d = json.loads(row[3])
             corr = d['corrs']
-            if corr != '' or 'Del' in row[0]:
+            if corr != '' or 'Insert' in row[0]:
                 arr.append((int(row[1]), int(row[2]), corr, row[0]))
         return arr
 
@@ -506,3 +506,8 @@ class Morphology(models.Model):
     class Meta:
         verbose_name = _('analysis')
         verbose_name_plural = _('analyses')
+
+
+class Starred(models.Model):
+    user = models.ForeignKey(User, null=True, blank=True)
+    sentences = models.ForeignKey(Sentence, null=True, blank=True)

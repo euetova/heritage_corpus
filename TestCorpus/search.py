@@ -10,15 +10,22 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 
 # todo make this into a neat one-line js-function
-jquery = """jQuery(function ($) {$('#***').annotator().annotator('addPlugin', 'Tags').annotator('addPlugin', 'Corr').annotator('addPlugin', 'Correction', 'Enter correct variant...').annotator('addPlugin', 'ReadOnlyAnnotations').annotator('addPlugin', 'Store', {prefix: '/heritage_corpus/document-annotations',annotationData: {'document': ***},loadFromSearch: {'document': ***}});});"""
+jquery = """jQuery(function ($) {$('#***').annotator().annotator('addPlugin', 'Tags').annotator('addPlugin', 'Corr').annotator('addPlugin', 'ReadOnlyAnnotations').annotator('addPlugin', 'Store', {prefix: '/RLC/document-annotations',annotationData: {'document': ***},loadFromSearch: {'document': ***}});});"""
 reg = re.compile(',| ')
 regToken= re.compile('">(.*?)</span>', flags=re.U | re.DOTALL)
 regSpans = re.compile('[.?,!:«(;#№–/...)»-]*<span .*?</span>[.?,!:«(;#№–/...)»-]*', flags=re.U | re.DOTALL)
 
 
 class ShowSentence:
+    sents = []
+
     def __init__(self, sent_id, num, expand):
         k = Sentence.objects.get(pk=sent_id)
+        if k.text not in ShowSentence.sents:
+            ShowSentence.sents.append(k.text)
+            self.hide = False
+        else:
+            self.hide = True
         self.tagged = self.bold(k.tagged, num)
         self.id = sent_id
         self.doc_id = k.doc_id
@@ -51,12 +58,16 @@ class ShowSentence:
                 #     f.write(tagged)
         return ' '.join(s)
 
+    @staticmethod
+    def empty():
+        ShowSentence.sents = []
+
 
 class SentBag:
     def __init__(self, e, l):
         """
         e - словарь, где ключи - номера предложений, а значения массивы номеров слов в предложении,
-        которые вероятно нужно рендрить жирным
+        которые вероятно нужно рендерить жирным
         """
         self.dic = {key: Sent(e[key], []) for key in e}
 
@@ -197,7 +208,8 @@ def exact_search(word, docs, flag, expand, page, per_page):
     for i, j in tokens:
         e[i].append(j)
     jq = []
-    sent_list = [ShowSentence(i, e[i], expand) for i in e]
+    sent_list = [ShowSentence(i, e[i], expand) for i in sorted(e)]
+    ShowSentence.empty()
     for sent in sent_list:
         jq.append(jquery.replace('***', str(sent.id)))
     return jq, sent_list, word, docs_len, sent_num
@@ -225,7 +237,8 @@ def exact_full_search(word, docs, flag, expand, page, per_page):
             fr, t = wn, wn
             a.update(e, fr, t)
     a = a.finalize(len(words))
-    sent_list = [ShowSentence(i, a[i], expand) for i in a]
+    sent_list = [ShowSentence(i, a[i], expand) for i in sorted(a)]
+    ShowSentence.empty()
     sent_num = len(sent_list)
     d_num = len(set(i.doc_id for i in sent_list))
     sent_list = sorted(sent_list, key=lambda i: i.id)[per_page*(page-1):per_page*page]
@@ -239,6 +252,7 @@ def lex_search(query, docs, flag, expand, page, per_page):
     lexis = query.getlist(u'lex[]')
     grams = query.getlist(u'grammar[]')
     errs = query.getlist(u'errors[]')
+    comments = query.getlist(u'comment[]')
     # print query.getlist(u'major'), query.getlist(u'genre')
 
     # f = codecs.open('/home/elmira/heritage_corpus/tempfiles/s.txt', 'w')
@@ -255,7 +269,9 @@ def lex_search(query, docs, flag, expand, page, per_page):
     lex = lexis[wn].encode('utf-8')
     gram = grams[wn].encode('utf-8')
     err = errs[wn].encode('utf-8')
-    rows, sent_num, d_num = collect_data([word, lex, gram, err, docs, flag, page, per_page])
+    comment = ''
+    # comment = comments[wn].encode('utf-8')
+    rows, sent_num, d_num = collect_data([word, lex, gram, err, comment, docs, flag, page, per_page])
     e = defaultdict(list)
     if rows:
         if len(rows[0]) == 2:
@@ -265,10 +281,12 @@ def lex_search(query, docs, flag, expand, page, per_page):
             for i, j, k in rows:
                 for n in range(j, k+1):
                     e[i].append(n)
-    sent_list = [ShowSentence(i, e[i], expand) for i in e]
+    sent_list = [ShowSentence(i, e[i], expand) for i in sorted(e)]
+    ShowSentence.empty()
     for sent in sent_list:
         jq.append(jquery.replace('***', str(sent.id)))
-    return jq, sent_list, ' '.join([word, lex, gram, err]), d_num, sent_num
+    return jq, sent_list, ' '.join([word, lex, gram, err, comment]), d_num, sent_num
+
 
 
 def lex_full_search(words, lexis, grams, errs, froms, tos, docs, flag, expand, page, per_page):
@@ -298,7 +316,8 @@ def lex_full_search(words, lexis, grams, errs, froms, tos, docs, flag, expand, p
             s += '<br><small>на расстоянии %d, %d от </small><br> ' %(fr, t)+ ' '.join([word, lex, gram, err])
             a.update(e, fr, t)
     a = a.finalize(len(words))
-    sent_list = [ShowSentence(i, a[i], expand) for i in a]
+    sent_list = [ShowSentence(i, a[i], expand) for i in sorted(a)]
+    ShowSentence.empty()
     sent_num = len(sent_list)
     d_num = len(set(i.doc_id for i in sent_list))
     sent_list = sorted(sent_list, key=lambda i: i.id)[per_page*(page-1):per_page*page]
@@ -309,7 +328,7 @@ def lex_full_search(words, lexis, grams, errs, froms, tos, docs, flag, expand, p
 
 def collect_data(arr):
     db = Database()
-    word, lex, gram, err, docs, flag, page, per_page = arr
+    word, lex, gram, err, comment, docs, flag, page, per_page = arr
     err = err.strip()
     s = bincode(word, lex, gram, err)
     if s == '0000':

@@ -24,7 +24,6 @@ import re
 import HTMLParser
 h = HTMLParser.HTMLParser()
 rePage = re.compile(u'&page=\\d+', flags=re.U)
-from django.forms.formsets import formset_factory
 import json
 
 
@@ -102,13 +101,10 @@ class Search(Index):
             page = request.GET.get('page')
             page = int(page) if page else 1
             expand = int(query.get(u'expand')[-1])
-            if query["exact_word"] != '':
+            if "exact_search" in query:
                 jq, sent_list, word, res_docs, res_num = exact_full_search(request.GET["exact_word"].lower().encode('utf-8'), subcorpus, flag, expand, page, per_page)
 
             else:
-                # QueryFormset = formset_factory(QueryForm)
-                # formset = QueryFormset(request.GET, request.FILES)
-                # if formset.is_valid():
                 # todo rewrite this part of search
                 jq, sent_list, word, res_docs, res_num = lex_search(query, subcorpus, flag, expand, page, per_page)
 

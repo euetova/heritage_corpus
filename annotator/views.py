@@ -18,7 +18,17 @@ from django.contrib.auth.models import User
 
 # My models
 from TestCorpus.db_utils import Database
-from annotator.models import Document, Annotation, Sentence, NativeChoices
+from annotator.models import Document, Annotation, Sentence, NativeChoices, Starred
+
+
+def star(request, sent_id, todo):
+    sent = Sentence.objects.get(pk=sent_id)
+    starred, created = Starred.objects.get_or_create(user=request.user)
+    if todo == "add":
+        starred.sentences.add(sent)
+    else:
+        starred.sentences.remove(sent)
+    return HttpResponse(json.dumps(list(request.user.starred_set)), content_type="application/json")
 
 
 def mark(request, doc_id):
@@ -245,6 +255,7 @@ class EditorView2(TemplateView):
                           annotationData: {'document': ***},
                           loadFromSearch: {'document': ***}});
                     });"""
+
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated():
