@@ -28,7 +28,6 @@
 $(document).ready(function(){
     $(".token[title*='bastard']").css( "text-decoration", "underline" );
 });
-
  function search(id) {
 $.get("/RLC/document-annotations/get_correction_by_id/"+id,
                     function (data) {
@@ -49,6 +48,8 @@ $.get("/RLC/document-annotations/get_correction_by_id/"+id,
   <strong>Warning!</strong>
 </div>
               {% endif %}
+
+     <div class="col-md-10">
     {% for doc, sents in data %}
     <div class="row">
       <div class="col-md-6">
@@ -124,7 +125,7 @@ $.get("/RLC/document-annotations/get_correction_by_id/"+id,
      <button type="button" class="btn btn-default  btn-sm" data-toggle="modal" data-target="#upload_csv">{% trans "Upload annotation" %}</button>
 
     </div>
-
+</div>
 
     <div class="modal fade" tabindex="-1" role="dialog" id="upload_csv">
   <div class="modal-dialog">
@@ -152,4 +153,69 @@ $.get("/RLC/document-annotations/get_correction_by_id/"+id,
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+	<div class="col-md-2">
+    <div class="row" style="padding-top:20px; line-height: 1; font-size:80%">
+<h4 class="well well-sm">Error tags</h4>
+  <ul class="nav nav-stacked well well-sm">
+    <li>Orthography
+    <ul>
+        <li>Graph</li>
+        <li>Hyphen</li>
+        <li>Space</li>
+        <li>Ortho</li>
+        <li>Translit</li>
+        <li>Misspell</li>
+    </ul></li>
+    <li>Morphology 
+    <ul>
+        <li>Deriv</li>
+        <li>Infl</li>
+        <li>Num</li>
+        <li>Gender</li>
+        <li>Morph</li>
+    </ul></li>
+    <li>Syntax
+    <ul>
+        <li>Asp</li>
+        <li>ArgStr</li>
+        <li>Passive</li>
+        <li>Reflec</li>
+        <li>AgrNum</li>
+        <li>AgrCase</li>
+		<li>AgrGender</li>
+        <li>AgrPers</li>
+        <li>AgrGerund</li>
+        <li>Gov</li>
+        <li>Ref</li>
+        <li>Conj</li>
+		<li>WO</li>
+        <li>Neg</li>
+        <li>Aux</li>
+        <li>Brev</li>
+        <li>Syntax</li>
+	</ul></li>
+    <li>Construction
+    <ul>
+        <li>Constr</li>
+    </ul></li>
+    <li>Lexis
+    <ul>
+	    <li>Lex</li>
+        <li>CS</li>
+        <li>Par</li>
+		<li>Idiom</li>
+	</ul></li>
+	<li>Additional tags
+	<ul>
+	    <li>Transfer</li>
+		<li>Not-clear</li>
+		<li>Del</li>
+		<li>Insert</li>
+		<li>Transp</li>
+		<li>Subst</li>
+	</ul></li>
+  </ul>
+    </div>
+    </div>
 {% endblock %}
