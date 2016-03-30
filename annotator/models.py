@@ -237,6 +237,10 @@ class Annotation(models.Model):
     tag = models.CharField(max_length=200, null=True, blank=True, db_index=True)
     start = models.IntegerField(blank=True, null=True)
     end = models.IntegerField(blank=True, null=True)
+    startOffset = models.IntegerField(blank=True, null=True)
+    endOffset = models.IntegerField(blank=True, null=True)
+    quote = models.CharField(max_length=200, null=True, blank=True)
+    corr = models.CharField(max_length=200, null=True, blank=True)
 
     class Meta:
         verbose_name = _('annotation')
@@ -438,6 +442,10 @@ class Annotation(models.Model):
         d["ranges"][0]["endOffset"] = endOffset
         self.data = json.dumps(d)
         self.tag = ', '.join(d["tags"])
+        self.startOffset = startOffset
+        self.endOffset = endOffset
+        self.quote = quote
+        self.corr = d["corrs"]
 
     @staticmethod
     def as_list(qs=None, user=None):

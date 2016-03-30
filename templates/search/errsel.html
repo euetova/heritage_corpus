@@ -24,61 +24,69 @@
         <div class="col-sm-4">
 <div class="panel panel-default">
           <div class="panel-heading">
-            <h3 title="Invert" class="panel-title gr_inv activeA grammar" onClick="inverse('orpho')">{% trans 'Spelling errors' %}</h3>
+            <h3 title="Invert" class="panel-title gr_inv activeA grammar" onClick="inverse('orpho')">Орфографические ошибки</h3>
           </div>
         <div class="panel-body">
           <div class="gr_group">
-<input type="checkbox" name="orpho" value="Graph" id="orphograph">&nbsp;<label for="orphograph">Graph</label><br/>
-<input type="checkbox" name="orpho" value="Hyphen" id="orphohyphen">&nbsp;<label for="orphohyphen">Hyphen</label><br/>
-<input type="checkbox" name="orpho" value="Space" id="orphospace">&nbsp;<label for="orphospace">Space</label><br/>
-<input type="checkbox" name="orpho" value="Ortho" id="orphoortho">&nbsp;<label for="orphoortho">Ortho</label><br/>
-<input type="checkbox" name="orpho" value="Translit" id="orphotranslit">&nbsp;<label for="orphotranslit">Translit</label><br/>
-<input type="checkbox" name="orpho" value="Misspell" id="orphomisspell">&nbsp;<label for="orphomisspell">Misspell</label><br/>
+		  <div>
+<input type="checkbox" name="orpho" value="Graph" id="orphograph">&nbsp;<label for="orphograph">Graph</label><a href="#" data-toggle="tooltip" title="Смешение алфавитов" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="orpho" value="Hyphen" id="orphohyphen">&nbsp;<label for="orphohyphen">Hyphen</label><a href="#" data-toggle="tooltip" title="Ошибки в дефисном написании" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="orpho" value="Space" id="orphospace">&nbsp;<label for="orphospace">Space</label><a href="#" data-toggle="tooltip" title="Ошибка в слитно-раздельном написании" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="orpho" value="Ortho" id="orphoortho">&nbsp;<label for="orphoortho">Ortho</label><a href="#" data-toggle="tooltip" title="Прочие орфографические ошибки" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="orpho" value="Translit" id="orphotranslit">&nbsp;<label for="orphotranslit">Translit</label><a href="#" data-toggle="tooltip" title="Неверная транлитерация имени собственного" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="orpho" value="Misspell" id="orphomisspell">&nbsp;<label for="orphomisspell">Misspell</label><a href="#" data-toggle="tooltip" title="Комплексная ошибка, затрагивающая несколько букв (трансформировано написание слова в целом)" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
           </div>
+		  </div>
         </div>
         </div>
 <div class="panel panel-default">
           <div class="panel-heading">
-            <h3 title="Invert" class="panel-title activeA  gr_inv grammar" onClick="inverse('lexis')">{% trans 'Lexical errors' %}</h3>
+            <h3 title="Invert" class="panel-title activeA  gr_inv grammar" onClick="inverse('lexis')">Лексические ошибки</h3>
           </div>
         <div class="panel-body">
           <div class="gr_group">
-<input type="checkbox" name="lexis" value="lex" id="lexislex">&nbsp;<label for="lexislex">Lex</label><br/>
-<input type="checkbox" name="lexis" value="CS" id="lexisword">&nbsp;<label for="lexisword">CS</label><br/>
-<input type="checkbox" name="lexis" value="Par" id="lexisphrase">&nbsp;<label for="lexisphrase">Par</label><br/>
-<input type="checkbox" name="lexis" value="Idiom" id="lexismeton">&nbsp;<label for="lexismeton">Idiom</label><br/>
+                <div>
+<input type="checkbox" name="lexis" value="lex" id="lexislex">&nbsp;<label for="lexislex">Lex</label><a href="#" data-toggle="tooltip" title="Неверное словоупотребление" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="lexis" value="CS" id="lexisword">&nbsp;<label for="lexisword">CS</label><a href="#" data-toggle="tooltip" title="Code-switching (использование иноязычного слова, написанного латиницей или кириллицей)" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="lexis" value="Par" id="lexisphrase">&nbsp;<label for="lexisphrase">Par</label><a href="#" data-toggle="tooltip" title="Паронимия" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="lexis" value="Idiom" id="lexismeton">&nbsp;<label for="lexismeton">Idiom</label><a href="#" data-toggle="tooltip" title="Ошибка в употреблении устойчивого словосочетания" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
           </div>
+		  </div>
         </div>
         </div>
 <div class="panel panel-default">
           <div class="panel-heading">
-            <h3 title="Invert" class="gr_inv panel-title activeA grammar" onClick="inverse('constr')">{% trans 'Collocation errors' %}</h3>
+            <h3 title="Invert" class="gr_inv panel-title activeA grammar" onClick="inverse('constr')">Ошибки в конструкциях</h3>
           </div>
         <div class="panel-body">
           <div class="gr_group">
-<input type="checkbox" name="constr" value="Constr" id="constrconstr">&nbsp;<label for="constrconstr">Constr</label><br/>
+                <div>
+<input type="checkbox" name="constr" value="Constr" id="constrconstr">&nbsp;<label for="constrconstr">Constr</label><a href="#" data-toggle="tooltip" title="Неверный выбор конструкции или ошибка внутри конструкции (ошибка затрагивает выбор или форму более одной единицы или связана с пропуском/добавлением единицы)" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
           </div>
+		  </div>
         </div>
         </div>
     </div>
 <div class="col-sm-4">
         <div class="panel panel-default">
           <div class="panel-heading">
-            <h3 title="Invert" class="gr_inv panel-title activeA grammar" onClick="inverse('morpho')">{% trans 'Morphological errors' %}</h3>
+            <h3 title="Invert" class="gr_inv panel-title activeA grammar" onClick="inverse('morpho')">Морфологические ошибки</h3>
           </div>
         <div class="panel-body">
           <div class="gr_group">
-<input type="checkbox" name="morpho" value="Deriv" id="morphoderiv">&nbsp;<label for="morphoderiv">Deriv</label><br/>
-<input type="checkbox" name="morpho" value="Infl" id="morphoinfl">&nbsp;<label for="morphoinfl">Infl</label><br/>
-<input type="checkbox" name="morpho" value="Num" id="morphonum">&nbsp;<label for="morphonum">Num</label><br/>
-<input type="checkbox" name="morpho" value="Gender" id="morphogender">&nbsp;<label for="morphogender">Gender</label><br/>
-<input type="checkbox" name="morpho" value="Morpho" id="morphomorpho">&nbsp;<label for="morphomorpho">Morpho</label><br/>
+                <div>
+<input type="checkbox" name="morpho" value="Deriv" id="morphoderiv">&nbsp;<label for="morphoderiv">Deriv</label><a href="#" data-toggle="tooltip" title="Случаи словотворчества, когда студент, используя приставки и/или суффиксы, создаёт несуществующее слово" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="morpho" value="Infl" id="morphoinfl">&nbsp;<label for="morphoinfl">Infl</label><a href="#" data-toggle="tooltip" title="Использование окончания, которое отсутствует в парадигме данного слова" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="morpho" value="Num" id="morphonum">&nbsp;<label for="morphonum">Num</label><a href="#" data-toggle="tooltip" title="Употребление слова в неверной числовой форме (несоответствующей контексту или аномальной для этого слова)" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="morpho" value="Gender" id="morphogender">&nbsp;<label for="morphogender">Gender</label><a href="#" data-toggle="tooltip" title="Изменение родовой принадлежности слова" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="morpho" value="Morpho" id="morphomorpho">&nbsp;<label for="morphomorpho">Morpho</label><a href="#" data-toggle="tooltip" title="Прочие морфологические ошибки" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
           </div>
+		  </div>
         </div>
         </div>
     <div class="panel panel-default">
           <div class="panel-heading">
-            <h3  title="Invert" class="panel-title activeA grammar gr_inv"  onClick="inverse('cause')">{% trans 'Cause of errors' %}</h3>
+            <h3  title="Invert" class="panel-title activeA grammar gr_inv"  onClick="inverse('cause')">Причина ошибок</h3>
           </div>
         <div class="panel-body">
           <div class="gr_group">
@@ -90,45 +98,49 @@
         </div>
     <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 title="Invert" class="panel-title gr_inv activeA grammar"  onClick="inverse('additional')">{% trans 'Additional tags' %}</h3>
+          <h3 title="Invert" class="panel-title gr_inv activeA grammar"  onClick="inverse('additional')">Дополнительные пометы</h3>
         </div>
         <div class="panel-body">
           <div class="gr_group">
-<input type="checkbox" name="additional" value="Transfer" id="additionaltransfer">&nbsp;<label for="additionaltransfer">Transfer</label><br/>
-<input type="checkbox" name="additional" value="Not-clear" id="additionalnotclear">&nbsp;<label for="additionalnotclear">Not-clear</label><br/>
-<input type="checkbox" name="additional" value="Del" id="additionaldelw">&nbsp;<label for="additionaldelw">Del</label><br/>
-<input type="checkbox" name="additional" value="Insert" id="additionalinsertw">&nbsp;<label for="additionalinsertw">Insert</label><br/>
-<input type="checkbox" name="additional" value="Subst" id="orphosubst">&nbsp;<label for="orphosubst">Subst</label><br/>
-<input type="checkbox" name="additional" value="Transp" id="orphotransp">&nbsp;<label for="orphotransp">Transp</label><br/>
+		  <div>
+<input type="checkbox" name="additional" value="Transfer" id="additionaltransfer">&nbsp;<label for="additionaltransfer">Transfer</label><a href="#" data-toggle="tooltip" title="Интерференция с L1" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="additional" value="Not-clear" id="additionalnotclear">&nbsp;<label for="additionalnotclear">Not-clear</label><a href="#" data-toggle="tooltip" title="По контексту невозможно восстановить смысл фразы и исправить ошибку" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="additional" value="Del" id="additionaldelw">&nbsp;<label for="additionaldelw">Del</label><a href="#" data-toggle="tooltip" title="Пропуск буквы, морфемы или слова" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="additional" value="Insert" id="additionalinsertw">&nbsp;<label for="additionalinsertw">Insert</label><a href="#" data-toggle="tooltip" title="Вставка ненужной элемента (буквы, морфемы или слова)" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="additional" value="Subst" id="orphosubst">&nbsp;<label for="orphosubst">Subst</label><a href="#" data-toggle="tooltip" title="Перестановка двух соседних элементов (буквы, морфемы или слова)" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="additional" value="Transp" id="orphotransp">&nbsp;<label for="orphotransp">Transp</label><a href="#" data-toggle="tooltip" title="Замена буквы, морфемы или слова" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
           </div>
+		  </div>
         </div>
         </div>
       </div>
 <div class="col-sm-4">
 <div class="panel panel-default">
           <div class="panel-heading">
-            <h3 title="Invert" class="panel-title gr_inv activeA grammar"  onClick="inverse('syntax')">{% trans 'Syntactic errors' %}</h3>
+            <h3 title="Invert" class="panel-title gr_inv activeA grammar"  onClick="inverse('syntax')">Синтаксические ошибки</h3>
           </div>
         <div class="panel-body">
           <div class="gr_group">
-<input type="checkbox" name="syntax" value="Asp" id="syntaxasp">&nbsp;<label for="syntaxasp">Asp</label><br/>
-<input type="checkbox" name="syntax" value="ArgStr" id="syntaxargstr">&nbsp;<label for="syntaxargstr">ArgStr</label><br/>
-<input type="checkbox" name="syntax" value="Passive" id="syntaxpassiv">&nbsp;<label for="syntaxpassiv">Passive</label><br/>
-<input type="checkbox" name="syntax" value="Reflex" id="syntaxrefl">&nbsp;<label for="syntaxrefl">Reflex</label><br/>
-<input type="checkbox" name="syntax" value="AgrNum" id="syntaxagrnum">&nbsp;<label for="syntaxagrnum">AgrNum</label><br/>
-<input type="checkbox" name="syntax" value="AgrCase" id="syntaxagrcase">&nbsp;<label for="syntaxagrcase">AgrCase</label><br/>
-<input type="checkbox" name="syntax" value="AgrGender" id="syntaxagrgender">&nbsp;<label for="syntaxagrgender">AgrGender</label><br/>
-<input type="checkbox" name="syntax" value="AgrPers" id="syntaxagrpers">&nbsp;<label for="syntaxagrpers">AgrPers</label><br/>
-<input type="checkbox" name="syntax" value="AgrGerund" id="syntaxagrgerund">&nbsp;<label for="syntaxagrgerund">AgrGerund</label><br/>
-<input type="checkbox" name="syntax" value="Gov" id="syntaxgov">&nbsp;<label for="syntaxgov">Gov</label><br/>
-<input type="checkbox" name="syntax" value="Ref" id="syntaxref">&nbsp;<label for="syntaxref">Ref</label><br/>
-<input type="checkbox" name="syntax" value="Conj" id="syntaxconj">&nbsp;<label for="syntaxconj">Conj</label><br/>
-<input type="checkbox" name="syntax" value="WO" id="syntaxwo">&nbsp;<label for="syntaxwo">WO</label><br/>
-<input type="checkbox" name="syntax" value="Neg" id="syntaxneg">&nbsp;<label for="syntaxneg">Neg</label><br/>
-<input type="checkbox" name="syntax" value="Aux" id="syntaxaux">&nbsp;<label for="syntaxaux">Aux</label><br/>
-<input type="checkbox" name="syntax" value="Brev" id="syntaxbrev">&nbsp;<label for="syntaxbrev">Brev</label><br/>
-<input type="checkbox" name="syntax" value="Syntax" id="syntaxsyn">&nbsp;<label for="syntaxsyn">Syntax</label><br/>
+		  <div>
+<input type="checkbox" name="syntax" value="Asp" id="syntaxasp">&nbsp;<label for="syntaxasp">Asp</label><a href="#" data-toggle="tooltip" title="Неверная видовая форма или неверный выбор глаголов ненаправленного или повторяющегося движения (ср. ехать - ездить)" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="ArgStr" id="syntaxargstr">&nbsp;<label for="syntaxargstr">ArgStr</label><a href="#" data-toggle="tooltip" title="Ошибки в аргументной структуре глагола, существительного или прилагательного" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="Passive" id="syntaxpassiv">&nbsp;<label for="syntaxpassiv">Passive</label><a href="#" data-toggle="tooltip" title="Неверное использование пассива" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="Reflex" id="syntaxrefl">&nbsp;<label for="syntaxrefl">Reflex</label><a href="#" data-toggle="tooltip" title="Неверное употребление возвратных глаголов" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="AgrNum" id="syntaxagrnum">&nbsp;<label for="syntaxagrnum">AgrNum</label><a href="#" data-toggle="tooltip" title="Ошибка в согласовании по числу" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="AgrCase" id="syntaxagrcase">&nbsp;<label for="syntaxagrcase">AgrCase</label><a href="#" data-toggle="tooltip" title="Ошибка в согласовании по падежу (NB Тег AgrCase не используется в случаях нарушения падежного управления: ср. с этом значением vs стречала с мою подрушку. Ошибка в управлении описывается тегом Gov)" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="AgrGender" id="syntaxagrgender">&nbsp;<label for="syntaxagrgender">AgrGender</label><a href="#" data-toggle="tooltip" title="Ошибка в согласовании по роду (прилагательных, причастий, местоимений или глаголов прошедшего времени)" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="AgrPers" id="syntaxagrpers">&nbsp;<label for="syntaxagrpers">AgrPers</label><a href="#" data-toggle="tooltip" title="Неверное согласование сказуемого по лицу" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="AgrGerund" id="syntaxagrgerund">&nbsp;<label for="syntaxagrgerund">AgrGerund</label><a href="#" data-toggle="tooltip" title="Ошибка в согласовании деепричастия" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="Gov" id="syntaxgov">&nbsp;<label for="syntaxgov">Gov</label><a href="#" data-toggle="tooltip" title="Ошибка в управлении (NB Тег Gov не используется в случаях нарушения согласования по падежу: ср. стречала с мою подрушку vs с этом значением. Ошибка в падежном согласовании описывается тегом AgrCase)" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="Ref" id="syntaxref">&nbsp;<label for="syntaxref">Ref</label><a href="#" data-toggle="tooltip" title="Ошибки в употреблении местоимений (пропуск или неверный выбор местоимения)" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="Conj" id="syntaxconj">&nbsp;<label for="syntaxconj">Conj</label><a href="#" data-toggle="tooltip" title="Ошибка в употреблении союза" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="WO" id="syntaxwo">&nbsp;<label for="syntaxwo">WO</label><a href="#" data-toggle="tooltip" title="Ошибка в порядке слов" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="Neg" id="syntaxneg">&nbsp;<label for="syntaxneg">Neg</label><a href="#" data-toggle="tooltip" title="Неверная постановка отрицания" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="Aux" id="syntaxaux">&nbsp;<label for="syntaxaux">Aux</label><a href="#" data-toggle="tooltip" title="Неверное употребление глагола «есть», глаголов-связок" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="Brev" id="syntaxbrev">&nbsp;<label for="syntaxbrev">Brev</label><a href="#" data-toggle="tooltip" title="Употребление кратких/полных прилагательных" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
+<input type="checkbox" name="syntax" value="Syntax" id="syntaxsyn">&nbsp;<label for="syntaxsyn">Syntax</label><a href="#syntaxsyn" data-toggle="tooltip" title="Прочие синтаксические ошибки, не описанные в классификации" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
           </div>
+		  </div>
         </div>
         </div>
       </div>
@@ -136,9 +148,9 @@
     <div class="row">
       <div class="col-sm-12">
         <div class="panel-footer" align="center">
-<input type="button" class="btn btn-default" onClick="collect();return false;" value="{% trans 'OK' %}">
-<input type="button" class="btn btn-default" onClick="document.all.gramForm.reset();return false;" value="{% trans 'Clear' %}">
-<input type="button" class="btn btn-default" onClick="window.close();return false;" value="{% trans 'Cancel' %}">
+<input type="button" class="btn btn-default" onClick="collect();return false;" value="ОК">
+<input type="button" class="btn btn-default" onClick="document.all.gramForm.reset();return false;" value="Очистить">
+<input type="button" class="btn btn-default" onClick="window.close();return false;" value="Отмена">
         </div>
       </div>
     </div>
@@ -146,4 +158,11 @@
 </div>
 </div>
 </body>
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(
+            {"trigger": 'click', "placement":'auto'}
+    );
+});
+</script>
 </html>
