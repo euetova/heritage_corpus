@@ -23,14 +23,6 @@ regWord = re.compile('([.?,!:«(;#№–/...)»-]*)(\\w+)([.?,!:«(;#№–/...)
 bold_regex = re.compile('/b\\[(\\d+)\\]')  # нужно, чтобы добавлять разметку в окне выдачи
 span_regex = re.compile('span\\[(\\d+)\\]')
 
-# опции для выбора в окне метаразметки
-NativeChoices = ((u'eng', _(u'English')), (u'nor', _(u'Norwegian')), (u'kor', _(u'Korean')),
-                 (u'ita', _(u'Italian')), (u'fr', _(u'French')), (u'ger', _(u'German')),
-                 (u'ser', _(u'Serbian')))
-ModeChoices = ((u'п', _(u'written')), (u'у', _(u'oral')))
-GenderChoices = ((u'ж', _(u'female')), (u'м', _(u'male')))
-BackgroundChoices = ((u'HL', _(u'heritage')), (u'FL', _(u'foreign')))
-
 
 class Document(models.Model):
     u"""
@@ -65,6 +57,29 @@ class Document(models.Model):
     annotated - размечен ли текст
     checked - проверен ли текст
     """
+    # опции для выбора в окне метаразметки
+    NativeChoices = ((u'eng', _(u'English')), (u'nor', _(u'Norwegian')), (u'kor', _(u'Korean')),
+                     (u'ita', _(u'Italian')), (u'fr', _(u'French')), (u'ger', _(u'German')),
+                     (u'ser', _(u'Serbian')))
+    ModeChoices = ((u'п', _(u'written')), (u'у', _(u'oral')))
+    GenderChoices = ((u'ж', _(u'female')), (u'м', _(u'male')))
+    BackgroundChoices = ((u'HL', _(u'heritage')), (u'FL', _(u'foreign')))
+    SubcorpusChoices =("HSE", "UNICE", "RULEC")
+    LevelChoices = (
+        (u'Beginner', (
+            (u'A1', _(u'A1')), (u'A2', _(u'A2')), (u'beg', _(u'Beginner'))
+        )),
+        (u'Intermediate', (
+            (u'IH', _(u'Intermediate High')), (u'IL', _(u'Intermediate Low')),
+            (u'IM', _(u'Intermediate Middle')), (u'B1', _(u'B1')),
+            (u'B2', _(u'B2')), (u'inter', _(u'Intermediate'))
+        )),
+        (u'Advanced', (
+            (u'AH', _(u'Advanced High')), (u'AL', _(u'Advanced Low')),
+            (u'AM', _(u'Advanced Middle')), (u'C1', _(u'C1')),
+            (u'C2', _(u'C2')), (u'adv', _(u'Advanced'))
+        ))
+    )
     owner = models.ForeignKey(User, blank=True, null=True, verbose_name=_('owner'))
     created = models.DateTimeField(auto_now_add=True, db_index=True)
     title = models.CharField(max_length=250, db_index=True, null=True, blank=True, editable=True, verbose_name=_('title'))
@@ -83,7 +98,7 @@ class Document(models.Model):
     course = models.CharField(max_length=100, null=True, blank=True, db_index=True, help_text=_("Enter the name of the program in which the text was assigned"), verbose_name=_('program'))
     language_background = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('language background'), choices=BackgroundChoices)
     text_type = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('type of text'))
-    level = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('level'))
+    level = models.CharField(max_length=10, null=True, blank=True, choices=LevelChoices, db_index=True, verbose_name=_('level'))
     annotation = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('annotation'))
     student_code = models.IntegerField(null=True, blank=True, verbose_name=_('student code'))
     time_limit = models.CharField(max_length=100, null=True, blank=True, verbose_name=_('time limit'))

@@ -30,6 +30,7 @@
     <div id="tabs">
   <ul>
     <li role="presentation" class="active"><a href="#howtosearch" aria-controls="home" role="tab"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> {% trans 'Как искать' %}</a></li>
+  <li role="presentation"><a href="#classification" aria-controls="profile" role="tab"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> {% trans 'Классификация ошибок' %}</a></li>
     <li role="presentation"><a href="#howtoann" aria-controls="profile" role="tab"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> {% trans 'Как размечать' %}</a></li>
     <li role="presentation"><a href="#howtoregister" aria-controls="messages" role="tab"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {% trans 'Как и зачем регистрироваться' %}</a></li>
       {% if request.user.is_authenticated %}
@@ -52,28 +53,37 @@
     <!--/left-->
         <div class="col-md-9 "  style="margin-top:1%;">
             <div class="panel panel-default content">
-      <div class="panel-heading">{% trans 'Как искать в корпусе' %}</div>
+      <div class="panel-heading"><h4 id="exact">{% trans 'Как найти словоформу в корпусе?' %}</h4></div>
       <div class="panel-body">
-          <h4 id="exact">Как найти словоформу в корпусе?</h4>
+
         <p>В окне поиска в строке «Поиск точных форм» наберите нужную словоформу и щелкните на кнопке «Поиск»:</p>
           <img src="{% static "img/exact-ru.png" %}" >
-          <p>В отдельном окне вы получите результаты поиска.</p><p>В этом поле доступен поиск только по одной словоформе.  Даже если вы введете несколько словоформ, будет выполнен только поиск по первому слову. Для поиска нескольких слов воспользуйтесь функцией лексико-грамматического поиска.</p><hr>
-          <h4 id="lexic">Что такое лексико-грамматический поиск?</h4>
+          <p>В отдельном окне вы получите результаты поиска.</p><p>В этом поле также доступен поиск только по нескольким словоформам.  Слова делятся по пробелам, вводить их нужно без знаков препинания. Например, вы можете ввести запрос "кто виноват и  что делать", но не "кто виноват и что делать?".</p>
+          </div>
+            </div>
+
+                      <div class="panel panel-default content">
+      <div class="panel-heading"><h4 id="lexic">{% trans 'Что такое лексико-грамматический поиск?' %}</h4></div>
+      <div class="panel-body">
           <p>Лексико-грамматический поиск позволяет искать все вхождения лексемы, вхождения лексемы в нужной грамматической форме, необходимые тэги ошибок, а так же позволяет искать сочетания нескольких слов.</p>
         <p>Чтобы найти все вхождения конкретной лексемы в корпус, на странице поиска в зоне «Лексико-грамматический поиск» в поле «Словоформа» наберите нужное слово и щелкните на кнопке «Поиск» (лексему нужно набирать в
 основной, словарной форме):</p>
           <img src="{% static "img/lexic1-ru.png" %}" width="100%">
           <p>В ответ на этот запрос Вы получите все словоформы, относящиеся к лексеме и входящие
 в Корпус.</p>
-          <hr>
-          <h4 id="distance">Расстояние между словами</h4>
+          </div></div>
+
+    <div class="panel panel-default content">
+      <div class="panel-heading"><h4 id="distance">{% trans 'Расстояние между словами' %}</h4></div>
+      <div class="panel-body">
           <p>В графе «Расстояние» устанавливается нужное расстояние от первого слова до всех следующих (например, расстояние 1–1 означает, что слово будет непосредственно справа от первого слова поиска, расстояние 1–2 – слово будет справа рядом или справа через одно слово, 2–2 – слово будет справа через одно слово от первого. Расстояние может быть отрицательным (например, -1 и -2). Если Вы ищете последовательность из трех слов, то в первой графе "Расстояние" нужно задать параметры 1-1, а во второй 2-2.</p>
           <img src="{% static "img/lexic3-ru.png" %}">
       </div>
     </div>
-        </div>
+
   </div>
-  <div id="howtoann">
+  </div>
+  <div id="classification">
       <div class="col-md-3 " style="font-size: smaller; position: relative;">
          <ul class="nav nav-stacked"  style="position: fixed">
                 <li><a href="#sec41">Орфография</a></li>
@@ -88,9 +98,6 @@
         </ul>
      </div>
         <div class="col-md-9">
-          <div class="panel panel-default">
-      <div class="panel-heading">{% trans 'Тэги ошибок' %}</div>
-      <div class="panel-body">
           <table class="table table-bordered table-condensed" style="font-size: smaller">
             <thead>
             <tr>
@@ -410,7 +417,13 @@
               </tbody>
           </table>
       </div>
-    </div>
+  </div>
+  <div id="howtoann">
+      <div class="col-md-3">
+
+     </div>
+        <div class="col-md-9">
+
         </div>
   </div>
   <div id="howtoregister">

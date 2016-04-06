@@ -18,7 +18,8 @@ from django.contrib.auth.models import User
 
 # My models
 from TestCorpus.db_utils import Database
-from annotator.models import Document, Annotation, Sentence, NativeChoices, Starred
+from TestCorpus.search import jquery
+from annotator.models import Document, Annotation, Sentence, Starred
 
 
 def star(request, sent_id, todo):
@@ -167,17 +168,17 @@ class Root(BaseStorageView):
             raise PermissionDenied("You do not have permission to view this page.")
         if len(request.GET) < 1:
             doc_list = Document.objects.all()
-            return render_to_response('annotate_list.html', {'docs': doc_list, 'langs':NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='')}, context_instance=RequestContext(request))
+            return render_to_response('annotate_list.html', {'docs': doc_list, 'langs':Document.NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='')}, context_instance=RequestContext(request))
         else:
             if 'user' in request.GET.keys():
                 s = [i for i in request.GET.keys() if i != 'user']
                 user = User.objects.get(username=s[0])
                 doc_list2 = list(set([ann.document.doc_id for ann in user.annotation_set.all()]))
-                return render_to_response('annotate_list.html', {'docs': doc_list2, 'langs':NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='')}, context_instance=RequestContext(request))
+                return render_to_response('annotate_list.html', {'docs': doc_list2, 'langs':Document.NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='')}, context_instance=RequestContext(request))
             else:
                 langs = request.GET.keys()
                 doc_list = [doc for doc in Document.objects.all() if doc.native in langs]
-                return render_to_response('annotate_list.html', {'docs': doc_list, 'langs':NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='')}, context_instance=RequestContext(request))
+                return render_to_response('annotate_list.html', {'docs': doc_list, 'langs':Document.NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='')}, context_instance=RequestContext(request))
 
 
 class Index(BaseStorageView):
@@ -274,5 +275,26 @@ class EditorView2(TemplateView):
         context['data'] = [(d1,s1)]
         context['doc_id'] = kwargs['doc_id']
         return context
+
+
+def delete_duplicates(arr):
+    s = []
+    for i in arr:
+        if i not in s:
+            s.append(i)
+    return s
+
+
+def user_annotations(request):
+    if not request.user.is_authenticated():
+        raise PermissionDenied("You do not have permission to view this page.")
+    user = request.user
+    sents = [ann.document for ann in user.annotation_set.order_by('-updated')]
+    sents = delete_duplicates(sents)
+    jq = []
+    for sent in sents:
+        jq.append(jquery.replace('***', str(sent.id)))
+    return render_to_response('annotator/mysentences.html', {'sents': sents, 'j':jq}, context_instance=RequestContext(request))
+
 
 

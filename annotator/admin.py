@@ -37,18 +37,18 @@ class DocumentAdmin(admin.ModelAdmin):
         ('Author', {'fields':
                         [
                             ('author', 'gender', 'course', 'language_background'),
-                            ('student_code', 'level', 'native'),
+                            ('level', 'native'),
                             ( 'fullmeta')
                         ]
                     }
         ),
         ('Date', {'fields': [('date1')]}),
-        ('Text', {'fields': [('genre', 'text_type', 'annotation', 'time_limit', 'mode', 'subcorpus')]}),
+        ('Text', {'fields': [('genre','time_limit', 'mode', 'subcorpus')]}),
         ('Autocompletion', {'fields': [('annotated', 'checked')], 'classes': [('collapse')]}),
     ]
 
-    list_display = ('title', 'subcorpus', 'author', 'gender', 'native', 'language_background', 'level', 'mode', 'created', 'annotated', 'checked', 'fullmeta')  # в таблице
-    list_filter = ['fullmeta', 'gender', 'annotated', 'checked', 'level', 'subcorpus', 'native', 'language_background', 'course', 'genre']  # фильтры справа в панели редактирования
+    list_display = ('title', 'owner', 'subcorpus', 'author', 'gender', 'native', 'language_background', 'level', 'mode', 'created', 'annotated', 'checked', 'fullmeta')  # в таблице
+    list_filter = ['fullmeta', 'owner', 'gender', 'annotated', 'checked', 'level', 'subcorpus', 'native', 'language_background', 'course', 'genre']  # фильтры справа в панели редактирования
 
 
 class AnnotationAdmin(admin.ModelAdmin):

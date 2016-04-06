@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect, render
 #from models import Doc, Sentence, Error, Analysis, Token
 from annotator.models import Document, Sentence, Annotation, Token, Morphology
-from annotator.models import NativeChoices, BackgroundChoices, GenderChoices, ModeChoices
 from django.views.generic.base import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
@@ -148,10 +147,10 @@ class Statistics(Index):
         annotations = Annotation.objects.all().count()
         a = defaultdict(str)
         repl = lambda i, j: self.merge_two_dicts(a, dict(j))[i]
-        gender = dict(Counter([repl(i.gender, GenderChoices) for i in Document.objects.all()]))
+        gender = dict(Counter([repl(i.gender, Document.GenderChoices) for i in Document.objects.all()]))
         genres = dict(Counter([i.genre for i in Document.objects.all()]))
-        lb = dict(Counter([repl(i.language_background, BackgroundChoices) for i in Document.objects.all()]))
-        native = dict(Counter([repl(i.native, NativeChoices) for i in Document.objects.all()]))
+        lb = dict(Counter([repl(i.language_background, Document.BackgroundChoices) for i in Document.objects.all()]))
+        native = dict(Counter([repl(i.native, Document.NativeChoices) for i in Document.objects.all()]))
 
         return render_to_response('stats.html', {'docs':docs,
                                                  'progress': [doc_ann, doc_ann_percent,
