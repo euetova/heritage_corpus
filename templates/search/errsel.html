@@ -85,18 +85,6 @@
         </div>
         </div>
     <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3  title="Invert" class="panel-title activeA grammar gr_inv"  onClick="inverse('cause')">Причина ошибок</h3>
-          </div>
-        <div class="panel-body">
-          <div class="gr_group">
-<input type="checkbox" name="cause" value="Cause" id="causecause">&nbsp;<label for="causecause">Cause</label><br/>
-<input type="checkbox" name="cause" value="Typo" id="causetypo">&nbsp;<label for="causetypo">Typo</label><br/>
-<input type="checkbox" name="cause" value="Contam" id="causecontam">&nbsp;<label for="causecontam">Contam</label><br/>
-          </div>
-        </div>
-        </div>
-    <div class="panel panel-default">
         <div class="panel-heading">
           <h3 title="Invert" class="panel-title gr_inv activeA grammar"  onClick="inverse('additional')">Дополнительные пометы</h3>
         </div>
@@ -111,6 +99,13 @@
 <input type="checkbox" name="additional" value="Transp" id="orphotransp">&nbsp;<label for="orphotransp">Transp</label><a href="#" data-toggle="tooltip" title="Замена буквы, морфемы или слова" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a><br/>
           </div>
 		  </div>
+        </div>
+        </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title gr_inv activeA grammar">
+              <input type="checkbox" value="Graph|Hyphen|Space|Ortho|Translit|Misspell|lex|CS|Par|Idiom|Constr|Deriv|Infl|Num|Gender|Morpho|Transfer|Not-clear|Del|Insert|Subst|Transp|Asp|ArgStr|Passive|Reflex|AgrNum|AgrCase|AgrGender|AgrPers|AgrGerund|Gov|Ref|Conj|WO|Neg|Aux|Brev|Syntax" id="anyerror">&nbsp;<label for="anyerror">{% trans "Any error"%}</label><a href="#" data-toggle="tooltip" title="Слово помечено хотя бы одной любой ошибкой" style="color:lightgrey"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>
+          </h3>
         </div>
         </div>
       </div>

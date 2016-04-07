@@ -52,8 +52,8 @@
       </div>
     <!--/left-->
         <div class="col-md-9 "  style="margin-top:1%;">
-            <div class="panel panel-default content">
-      <div class="panel-heading"><h4 id="exact">{% trans 'Как найти словоформу в корпусе?' %}</h4></div>
+            <div class="panel panel-default content"  id="exact">
+      <div class="panel-heading"><h4>{% trans 'Как найти словоформу в корпусе?' %}</h4></div>
       <div class="panel-body">
 
         <p>В окне поиска в строке «Поиск точных форм» наберите нужную словоформу и щелкните на кнопке «Поиск»:</p>
@@ -62,8 +62,8 @@
           </div>
             </div>
 
-                      <div class="panel panel-default content">
-      <div class="panel-heading"><h4 id="lexic">{% trans 'Что такое лексико-грамматический поиск?' %}</h4></div>
+                      <div class="panel panel-default content" id="lexic">
+      <div class="panel-heading"><h4 >{% trans 'Что такое лексико-грамматический поиск?' %}</h4></div>
       <div class="panel-body">
           <p>Лексико-грамматический поиск позволяет искать все вхождения лексемы, вхождения лексемы в нужной грамматической форме, необходимые тэги ошибок, а так же позволяет искать сочетания нескольких слов.</p>
         <p>Чтобы найти все вхождения конкретной лексемы в корпус, на странице поиска в зоне «Лексико-грамматический поиск» в поле «Словоформа» наберите нужное слово и щелкните на кнопке «Поиск» (лексему нужно набирать в
@@ -73,8 +73,8 @@
 в Корпус.</p>
           </div></div>
 
-    <div class="panel panel-default content">
-      <div class="panel-heading"><h4 id="distance">{% trans 'Расстояние между словами' %}</h4></div>
+    <div class="panel panel-default content"  id="distance">
+      <div class="panel-heading"><h4>{% trans 'Расстояние между словами' %}</h4></div>
       <div class="panel-body">
           <p>В графе «Расстояние» устанавливается нужное расстояние от первого слова до всех следующих (например, расстояние 1–1 означает, что слово будет непосредственно справа от первого слова поиска, расстояние 1–2 – слово будет справа рядом или справа через одно слово, 2–2 – слово будет справа через одно слово от первого. Расстояние может быть отрицательным (например, -1 и -2). Если Вы ищете последовательность из трех слов, то в первой графе "Расстояние" нужно задать параметры 1-1, а во второй 2-2.</p>
           <img src="{% static "img/lexic3-ru.png" %}">
@@ -423,7 +423,7 @@
          <ul class="nav nav-stacked"  style="position: fixed">
                 <li><a href="#start">Начало работы</a></li>
                 <li><a href="#annotatetexts">Разметка</a></li>
-              <li><a href="#errors">Сообщения об ошибках</a></li>
+{#              <li><a href="#errors">Сообщения об ошибках</a></li>#}
 
             <li><a href="#top">{% trans "Back to top" %}</a></li>
 
