@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 {% load i18n %}
+{% load annotator_tags %}
 
 {% block title %}
     {% trans 'Russian Learner Corpus Statistics' %}
@@ -8,8 +10,31 @@
 {% endblock %}
 {% block meta_content %}
     {% trans 'Statistics' %}
-{% endblock %} 
+{% endblock %}
 
+{% block other %}
+    <script>
+    $(document).ready(function(){
+$( "#showbutton" ).click(function() {
+  $( "#annotatorlist" ).toggle();
+});
+            $("#allpersons").click(function () {
+               var checkboxes = $(".Person");
+                checkboxes.prop('checked', function(){
+                    if ($(this).prop('checked')){return false}
+                    else {return true}
+                });
+    });
+                $("#practicepersons").click(function () {
+    $(".Practice").prop('checked', function(){
+                    if ($(this).prop('checked')){return false}
+                    else {return true}
+                });
+});
+
+    });
+</script>
+{% endblock %}
 {% block upper-row %}
 {% endblock %}
 
@@ -19,9 +44,10 @@
     <div class="row">
     <form method="get">
     <p>{% trans 'Choose language:' %}
+    <input class="hidden" name="language" value="language">
         {% for lang in langs %}
         <label class="checkbox-inline">
-        <input class="hidden" name="language" value="language">
+
           <input type="checkbox" name="{{ lang.0 }}" value=""> {{ lang.1 }}
         </label>
         {% endfor %}
@@ -30,13 +56,18 @@
     </form>
 
     </div>
+<span id="showbutton" class="label label-default" style="margin-bottom: 10px">Показать список разметчиков</span>
     <div class="row">
+
     <form method="get">
-   <p>{% trans 'Choose annotator:' %}
+
+   <p id="annotatorlist" style="display: none;border-radius: 5px;border: 2px solid lightgrey">
+       {% trans 'Choose annotator:' %} <span id="allpersons" class="label label-default">Выделить всех</span> <span id="practicepersons" class="label label-default">Выделить практикантов</span><br>
+
+   <input class="hidden" name="user" value="user">
         {% for u in users %}
-        <label class="radio-inline">
-        <input class="hidden" name="user" value="user">
-          <input type="radio" name="{{ u.username }}" value=""> {{ u.first_name }} {{ u.last_name }}
+        <label class="checkbox-inline">
+          <input type="checkbox" class="Person {% if u|has_group:"STAFF"%}STAFF{% endif %} {% if u|has_group:"Annotator"%}Annotator{% endif %} {% if u|has_group:"Практиканты"%}Practice{% endif %}" name="{{ u.username }}" value=""> {{ u.first_name }} {{ u.last_name }}
         </label>
         {% endfor %}
         <input type="submit" class="btn btn-xs btn-primary" value="Filter"></p>
@@ -44,7 +75,7 @@
     </form>
 
     </div>
-<div class="row">
+<div class="row" style="margin-top: 10px">
 <div class="col-md-4">
     <div class="panel panel-primary">
     <div class="panel-heading">{% trans 'Not annotated' %}</div>

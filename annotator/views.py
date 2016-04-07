@@ -172,8 +172,11 @@ class Root(BaseStorageView):
         else:
             if 'user' in request.GET.keys():
                 s = [i for i in request.GET.keys() if i != 'user']
-                user = User.objects.get(username=s[0])
-                doc_list2 = list(set([ann.document.doc_id for ann in user.annotation_set.all()]))
+                users = [user for user in User.objects.all() if user.username in request.GET.keys()]
+                doc_list2 = []
+                for user in users:
+                    doc_list2 += [ann.document.doc_id for ann in user.annotation_set.all()]
+                    doc_list2 = list(set(doc_list2))
                 return render_to_response('annotate_list.html', {'docs': doc_list2, 'langs':Document.NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='')}, context_instance=RequestContext(request))
             else:
                 langs = request.GET.keys()
