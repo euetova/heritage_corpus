@@ -7,6 +7,28 @@ from django.contrib.admin import AdminSite
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from news.models import Article, Section
+from django.utils.translation import ugettext_lazy as _
+
+
+class OwnerFilter(admin.SimpleListFilter):
+    title = _("owner")
+    parameter_name = 'owner'
+
+    def lookups(self, request, model_admin):
+        users = list(set([doc.owner for doc in Document.objects.all()]))
+        res = []
+        for u in users:
+            if u is None:
+                continue
+            if u.first_name:
+                res.append((u.username, u.first_name + ' ' + u.last_name))
+            else:
+                res.append((u.username, u.username))
+        return res
+
+    def queryset(self, request, queryset):
+        return queryset.filter(owner__username=self.value())
+
 
 
 class LearnerCorpusAdminSite(AdminSite):
@@ -48,7 +70,7 @@ class DocumentAdmin(admin.ModelAdmin):
     ]
 
     list_display = ('title', 'owner', 'subcorpus', 'author', 'gender', 'native', 'language_background', 'level', 'mode', 'created', 'annotated', 'checked', 'fullmeta')  # в таблице
-    list_filter = ['fullmeta', 'owner', 'gender', 'annotated', 'checked', 'level', 'subcorpus', 'native', 'language_background', 'course', 'genre']  # фильтры справа в панели редактирования
+    list_filter = ['fullmeta', OwnerFilter, 'gender', 'annotated', 'checked', 'level', 'subcorpus', 'native', 'language_background', 'course', 'genre']  # фильтры справа в панели редактирования
 
 
 class AnnotationAdmin(admin.ModelAdmin):

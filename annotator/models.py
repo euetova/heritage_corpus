@@ -14,14 +14,15 @@ from utils import *
 import json
 
 # находит тэги span с окружающими знаками препинания
-regSpan = re.compile('[.?,!:«(;#№–/...)»-]*<span .*?</span>[.?,!:«(;#№–/...)»-]*', flags=re.U | re.DOTALL)
+regSpan = re.compile(u'[.?,!:«(;#№–/...)»-]*<span .*?</span>[.?,!:«(;#№–/...)»-]*', flags=re.U | re.DOTALL)
 
 # находит слово с окружающими знаками препинания
-regWord = re.compile('([.?,!:«(;#№–/...)»-]*)(\\w+)([.?,!:«(;#№–/...)»-]*)', flags=re.U | re.DOTALL)
+regWord = re.compile(u'([.?,!:«(;#№–/...)»-]*)(\\w+)([.?,!:«(;#№–/...)»-]*)', flags=re.U | re.DOTALL)
+regPunct = re.compile(u'^([.?,!:«(;#№–/...)<>»—]|&.*?;)*$', flags=re.U | re.DOTALL)
 
 # нужно, чтобы добавлять разметку в окне выдачи
-bold_regex = re.compile('/b\\[(\\d+)\\]')  # нужно, чтобы добавлять разметку в окне выдачи
-span_regex = re.compile('span\\[(\\d+)\\]')
+bold_regex = re.compile(u'/b\\[(\\d+)\\]')  # нужно, чтобы добавлять разметку в окне выдачи
+span_regex = re.compile(u'span\\[(\\d+)\\]')
 
 
 class Document(models.Model):
@@ -64,7 +65,7 @@ class Document(models.Model):
     ModeChoices = ((u'п', _(u'written')), (u'у', _(u'oral')))
     GenderChoices = ((u'ж', _(u'female')), (u'м', _(u'male')))
     BackgroundChoices = ((u'HL', _(u'heritage')), (u'FL', _(u'foreign')))
-    SubcorpusChoices =("HSE", "UNICE", "RULEC")
+    SubcorpusChoices = ((u"HSE", u"HSE"), (u"UNICE", u"UNICE"), (u"RULEC", u"RULEC"))
     LevelChoices = (
         (u'Beginner', (
             (u'A1', _(u'A1')), (u'A2', _(u'A2')), (u'beg', _(u'Beginner'))
@@ -88,7 +89,8 @@ class Document(models.Model):
     author = models.CharField(max_length=100, help_text=_("Enter author's first and/or  second name."), verbose_name=_('author'))
     mode = models.CharField(max_length=50, null=True, blank=True, db_index=True, verbose_name=_('mode'), choices=ModeChoices)
     filename = models.CharField(max_length=5000, help_text=_("Enter the name of the folder and file from which the text is taken."), verbose_name=_('Source'))
-    subcorpus = models.CharField(max_length=5000, null=True, blank=True, verbose_name=_('subcorpus'))
+    subcorpus = models.CharField(max_length=5000, null=True, blank=True, verbose_name=_('subcorpus')
+                                 , choices=SubcorpusChoices)
 
     # optional fields - need them for meta in CoRST
     date1 = models.IntegerField(null=True, blank=True, help_text=_("When the text was written, e.g. 2014."), verbose_name=_('date'))
@@ -306,7 +308,7 @@ class Annotation(models.Model):
         Вокруг исправлений вставляются тэги '<span class="correction">' и '</span>',
         чтобы исправление рендерилось на странице с другим форматированием.
         """
-        sentence = sentence.split()
+        sentence = [i for i in sentence.split() if regPunct.search(i) is None]
         dictionary = dict()
         for word_num in range(len(sentence)):
             dictionary[word_num] = sentence[word_num]
@@ -332,7 +334,7 @@ class Annotation(models.Model):
         чтобы исправление рендерилось на странице с другим форматированием.
         """
         ORTHO = ["graph", "hyphen", "space", "ortho", "translit", "misspell", "deriv", "infl", "num", "gender", "morph"]
-        sentence = sentence.split()
+        sentence = [i for i in sentence.split() if regPunct.search(i) is None]
         dictionary = dict()
         for word_num in range(len(sentence)):
             dictionary[word_num] = sentence[word_num]

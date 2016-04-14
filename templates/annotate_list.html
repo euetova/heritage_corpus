@@ -67,7 +67,7 @@ $( "#showbutton" ).click(function() {
    <input class="hidden" name="user" value="user">
         {% for u in users %}
         <label class="checkbox-inline">
-          <input type="checkbox" class="Person {% if u|has_group:"STAFF"%}STAFF{% endif %} {% if u|has_group:"Annotator"%}Annotator{% endif %} {% if u|has_group:"Практиканты"%}Practice{% endif %}" name="{{ u.username }}" value=""> {{ u.first_name }} {{ u.last_name }}
+          <input type="checkbox" class="Person {% if u|has_group:"STAFF"%}STAFF{% endif %} {% if u|has_group:"Annotator"%}Annotator{% endif %} {% if u|has_group:"Практиканты"%}Practice{% endif %}" name="{{ u.username }}" value=""> {{ u.last_name }} {{ u.first_name }}
         </label>
         {% endfor %}
         <input type="submit" class="btn btn-xs btn-primary" value="Filter"></p>

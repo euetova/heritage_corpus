@@ -168,7 +168,7 @@ class Root(BaseStorageView):
             raise PermissionDenied("You do not have permission to view this page.")
         if len(request.GET) < 1:
             doc_list = Document.objects.all()
-            return render_to_response('annotate_list.html', {'docs': doc_list, 'langs':Document.NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='')}, context_instance=RequestContext(request))
+            return render_to_response('annotate_list.html', {'docs': doc_list, 'langs':Document.NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='').order_by('last_name')}, context_instance=RequestContext(request))
         else:
             if 'user' in request.GET.keys():
                 s = [i for i in request.GET.keys() if i != 'user']
@@ -177,11 +177,11 @@ class Root(BaseStorageView):
                 for user in users:
                     doc_list2 += [ann.document.doc_id for ann in user.annotation_set.all()]
                     doc_list2 = list(set(doc_list2))
-                return render_to_response('annotate_list.html', {'docs': doc_list2, 'langs':Document.NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='')}, context_instance=RequestContext(request))
+                return render_to_response('annotate_list.html', {'docs': doc_list2, 'langs':Document.NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='').order_by('last_name')}, context_instance=RequestContext(request))
             else:
                 langs = request.GET.keys()
                 doc_list = [doc for doc in Document.objects.all() if doc.native in langs]
-                return render_to_response('annotate_list.html', {'docs': doc_list, 'langs':Document.NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='')}, context_instance=RequestContext(request))
+                return render_to_response('annotate_list.html', {'docs': doc_list, 'langs':Document.NativeChoices, 'users': User.objects.exclude(username='admin').exclude(first_name='').order_by('last_name')}, context_instance=RequestContext(request))
 
 
 class Index(BaseStorageView):

@@ -1392,7 +1392,7 @@
       return this.hide();
     };
 
-              var items = [ "Graph", "Hyphen", "Space", "Ortho", "Translit", "Misspell", "Deriv", "Infl", "Num", "Gender", "Morph", "Asp", "ArgStr", "Passive", "Reflex", "AgrNum", "AgrCase", "AgrGender", "AgrPers", "AgrGerund", "Gov", "Ref", "Conj", "WO", "Neg", "Aux", "Brev", "Syntax", "Constr", "Lex", "CS", "Par", "Idiom", "Transfer", "Not-clear", "Del", "Insert", "Transp", "Subst"];
+              var items = [ "Graph", "Hyphen", "Space", "Ortho", "Translit", "Misspell", "Deriv", "Infl", "Num", "Gender", "Morph", "Asp", "ArgStr", "Passive", "Refl", "AgrNum", "AgrCase", "AgrGender", "AgrPers", "AgrGerund", "Gov", "Ref", "Conj", "WO", "Neg", "Aux", "Brev", "Syntax", "Constr", "Lex", "CS", "Par", "Idiom", "Transfer", "Not-clear", "Del", "Insert", "Transp", "Subst", "Altern", "Tense", "Mode"];
 
     function split( val ) {
       return val.split( /\s+/ );
