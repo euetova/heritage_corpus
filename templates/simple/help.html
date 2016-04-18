@@ -229,7 +229,7 @@
 </td>
                   <td>неверное использование пассива</td>
                   <td>лесть часто злоупотребляется… [вм. лестью часто злоупотребляют ]
-Когда Николас проснулся они были обокрадены</td>
+Когда Николас проснулся они были обокрадены</td>
                   <td>Passive</td></tr>
               <tr>
                   <td>Tense
@@ -499,11 +499,37 @@
         </div>
   </div>
   <div id="howtoregister">
-      <div class="col-md-3">
+    <div class="col-md-3 " style="font-size: smaller; position: relative">
+         <ul class="nav nav-stacked"  style="position: fixed">
+                <li><a href="#one">1</a></li>
+                <li><a href="#two">2</a></li>
+              <li><a href="#three">3</a></li>
 
+            <li><a href="#top">{% trans "Back to top" %}</a></li>
+
+        </ul>
      </div>
         <div class="col-md-9">
+            <div class="panel panel-default content" id="one">
+                  <div class="panel-heading"><h4>{% trans '1' %}</h4></div>
+                  <div class="panel-body">
+<p>...</p>
+                  </div>
+                </div>
+				
+	         <div class="panel panel-default content" id="two">
+                  <div class="panel-heading"><h4>{% trans '2' %}</h4></div>
+                  <div class="panel-body">
+<p>...</p>
+                  </div>
+                </div>	
 
+            <div class="panel panel-default content" id="three">
+                  <div class="panel-heading"><h4>{% trans '3' %}</h4></div>
+                  <div class="panel-body">
+<p>...</p>
+                  </div>
+                </div>				
         </div>
   </div>
     {% if request.user.is_authenticated %}
