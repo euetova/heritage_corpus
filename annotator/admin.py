@@ -27,14 +27,16 @@ class OwnerFilter(admin.SimpleListFilter):
         return res
 
     def queryset(self, request, queryset):
+        if self.value() is None:
+            return Document.objects.all()
         return queryset.filter(owner__username=self.value())
 
 
 
 class LearnerCorpusAdminSite(AdminSite):
-    site_header = 'Russian Heritage Corpus'
+    site_header = 'Russian Learner Corpus'
     site_title = 'Admin'
-    index_title = 'RULEC'
+    index_title = 'RLC'
 
 
 # отображение новостных статей
@@ -58,8 +60,9 @@ class DocumentAdmin(admin.ModelAdmin):
         (None,               {'fields': ['owner', 'title', 'body', 'filename']}),
         ('Author', {'fields':
                         [
-                            ('author', 'gender', 'course', 'language_background'),
-                            ('level', 'native'),
+                            ('author', 'gender', 'course'),
+                            ('language_background', 'native'),
+                            ('general_level', 'level'),
                             ( 'fullmeta')
                         ]
                     }
@@ -69,8 +72,8 @@ class DocumentAdmin(admin.ModelAdmin):
         ('Autocompletion', {'fields': [('annotated', 'checked')], 'classes': [('collapse')]}),
     ]
 
-    list_display = ('title', 'owner', 'subcorpus', 'author', 'gender', 'native', 'language_background', 'level', 'mode', 'created', 'annotated', 'checked', 'fullmeta')  # в таблице
-    list_filter = ['fullmeta', OwnerFilter, 'gender', 'annotated', 'checked', 'level', 'subcorpus', 'native', 'language_background', 'course', 'genre']  # фильтры справа в панели редактирования
+    list_display = ('id', 'title', 'owner', 'subcorpus', 'author', 'gender', 'native', 'language_background', 'level', 'mode', 'created', 'annotated', 'checked', 'fullmeta')  # в таблице
+    list_filter = ['fullmeta', OwnerFilter, 'gender', 'annotated', 'checked', 'level', 'subcorpus', 'native', 'language_background', 'course', 'genre', 'mode']  # фильтры справа в панели редактирования
 
 
 class AnnotationAdmin(admin.ModelAdmin):

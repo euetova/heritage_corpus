@@ -32,7 +32,7 @@
     <li role="presentation" class="active"><a href="#howtosearch" aria-controls="home" role="tab"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> {% trans 'Как искать' %}</a></li>
   <li role="presentation"><a href="#classification" aria-controls="profile" role="tab"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> {% trans 'Классификация ошибок' %}</a></li>
     <li role="presentation"><a href="#howtoann" aria-controls="profile" role="tab"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> {% trans 'Как размечать' %}</a></li>
-    <li role="presentation"><a href="#howtoregister" aria-controls="messages" role="tab"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {% trans 'Как и зачем регистрироваться' %}</a></li>
+    <li role="presentation"><a href="#howtoregister" aria-controls="messages" role="tab"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {% trans 'Регистрация' %}</a></li>
       {% if request.user.is_authenticated %}
     <li role="presentation"><a href="#howtoaddtexts" aria-controls="settings" role="tab"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> {% trans 'Как добавлять тексты' %}</a></li>
       {% endif %}
@@ -58,7 +58,11 @@
 
         <p>В окне поиска в строке «Поиск точных форм» наберите нужную словоформу и щелкните на кнопке «Поиск»:</p>
           <img src="{% static "img/exact-ru.png" %}" >
-          <p>В отдельном окне вы получите результаты поиска.</p><p>В этом поле также доступен поиск только по нескольким словоформам.  Слова делятся по пробелам, вводить их нужно без знаков препинания. Например, вы можете ввести запрос "кто виноват и  что делать", но не "кто виноват и что делать?".</p>
+         <p>В этом поле также доступен поиск только по нескольким словоформам.  Слова делятся по пробелам, вводить их нужно без знаков препинания. Например, вы можете ввести запрос "кто виноват и  что делать", но не "кто виноват и что делать?".</p>
+          <img src="{% static "img/search2.png" %}" >
+           <p>В отдельном окне вы получите результаты поиска.</p>
+          <img src="{% static "img/res1.png" %}"  width="100%">
+          <img src="{% static "img/res2.png" %}"  width="100%">
           </div>
             </div>
 
@@ -71,6 +75,9 @@
           <img src="{% static "img/lexic1-ru.png" %}" width="100%">
           <p>В ответ на этот запрос Вы получите все словоформы, относящиеся к лексеме и входящие
 в Корпус.</p>
+          <img src="{% static "img/search-ex1.png" %}"  width="100%">
+          <img src="{% static "img/search-ex2.png" %}"  width="100%">
+          <img src="{% static "img/search-ex3.png" %}"  width="100%">
           </div></div>
 
     <div class="panel panel-default content"  id="distance">
@@ -78,6 +85,7 @@
       <div class="panel-body">
           <p>В графе «Расстояние» устанавливается нужное расстояние от первого слова до всех следующих (например, расстояние 1–1 означает, что слово будет непосредственно справа от первого слова поиска, расстояние 1–2 – слово будет справа рядом или справа через одно слово, 2–2 – слово будет справа через одно слово от первого. Расстояние может быть отрицательным (например, -1 и -2). Если Вы ищете последовательность из трех слов, то в первой графе "Расстояние" нужно задать параметры 1-1, а во второй 2-2.</p>
           <img src="{% static "img/lexic3-ru.png" %}">
+          <img src="{% static "img/search-ex4.png" %}"  width="100%">
       </div>
     </div>
 
@@ -443,6 +451,7 @@
       <div class="col-md-3 " style="font-size: smaller; position: relative;">
          <ul class="nav nav-stacked"  style="position: fixed">
                 <li><a href="#start">Начало работы</a></li>
+             <li><a href="#annotatewindow">Окно разметки</a></li>
                 <li><a href="#annotatetexts">Разметка</a></li>
 {#              <li><a href="#errors">Сообщения об ошибках</a></li>#}
 
@@ -467,14 +476,27 @@
                   </div>
                 </div>
 
+            <div class="panel panel-default content" id="annotatewindow">
+                  <div class="panel-heading"><h4>{% trans 'Окно разметки' %}</h4></div>
+                  <div class="panel-body">
+<img src="{% static "img/annotator-interface.png" %}"  width="100%">
+                      <img src="{% static "img/annotator-interface2.png" %}"  width="100%">
+
+                  </div>
+                </div>
+
             <div class="panel panel-default content" id="annotatetexts">
                   <div class="panel-heading"><h4>{% trans 'Разметка' %}</h4></div>
                   <div class="panel-body">
 <p>На странице текста, чтобы разметить фрагмент, необходимо его выделить, зажав
 левую кнопку мыши, а затем нажать <img src="{% static "img/addannotation.png" %}">.</p>
-<p>В открывшемся окне нужно ввести теги и исправления. Список используемых тэгов
+                      <img src="{% static "img/annotator-interface3.png" %}"  width="100%">
+<p>В открывшемся окне нужно ввести теги и исправления.</p>
+                      <img src="{% static "img/annotator-interface4.png" %}"  width="100%">
+                      <p>Список используемых тэгов
 расположен справа от текста. Кроме того, в поле ввода тегов при вводе хотя бы одного
 символа появляется список-подсказка.</p>
+                      <img src="{% static "img/annotator-interface5.png" %}"  width="100%">
 <p>При разметке следует помнить следующие правила:</p>
                       <ul>
                           <li>Несколько тегов записываются через пробел. Если тег выбран из списка-подсказки, пробел ставится автоматически.</li>
@@ -484,6 +506,7 @@
 слова “ключ”, так как “красивый” было согласовано правильно, хоть и с
 неправильной формой существительного.</li>
                       </ul>
+                      <img src="{% static "img/annotator-interface6.png" %}" width="100%" >
 
 <p>После того, как разметка текста <strong>полностью</strong> закончена необходимо нажать оранжевую
 кнопку “Annotated”, тем самым переместив его в раздел “Annotated, not checked”.</p>
@@ -501,33 +524,44 @@
   <div id="howtoregister">
     <div class="col-md-3 " style="font-size: smaller; position: relative">
          <ul class="nav nav-stacked"  style="position: fixed">
-                <li><a href="#one">1</a></li>
-                <li><a href="#two">2</a></li>
-              <li><a href="#three">3</a></li>
+                <li><a href="#why-register"> {% trans 'Что дает регистрация в корпусе' %}</a></li>
+                <li><a href="#how-register">{% trans 'Как зарегистрироваться' %}</a></li>
+              <li><a href="#forgotpassword">{% trans 'Что делать, если я забыл пароль' %}</a></li>
 
             <li><a href="#top">{% trans "Back to top" %}</a></li>
 
         </ul>
      </div>
         <div class="col-md-9">
-            <div class="panel panel-default content" id="one">
-                  <div class="panel-heading"><h4>{% trans '1' %}</h4></div>
+            <div class="panel panel-default content" id="why-register">
+                  <div class="panel-heading"><h4>{% trans 'Что дает регистрация в корпусе' %}</h4></div>
                   <div class="panel-body">
-<p>...</p>
+                    <p>Зарегистрировавшись в корпусе, вы сможете: </p>
+                      <ul>
+                          <li>добавлять в корпус новые тексты и информацию об авторах,</li>
+                          <li>получить доступ к полным текстам, а не только к результатам поиска с расширенным контекстом,</li>
+                          <li>добавлять тэги / комментарии / исправления к текстам,</li>
+                          <li>редактировать существующую разметку,</li>
+                          <li>размечать примеры непосредственно в поисковой выдаче,</li>
+                          <li>перейти от выдачи поиска к полным текстам,</li>
+                          <li>сохранять в свою учетную запись выбранные примеры.</li>
+                      </ul>
                   </div>
                 </div>
 				
-	         <div class="panel panel-default content" id="two">
-                  <div class="panel-heading"><h4>{% trans '2' %}</h4></div>
+	         <div class="panel panel-default content" id="how-register">
+                  <div class="panel-heading"><h4>{% trans 'Как зарегистрироваться' %}</h4></div>
                   <div class="panel-body">
-<p>...</p>
+<p>Чтобы получить доступ к необходимым вам функциям, нужно подать заявку на регистрацию в корпусе RLC, отправив письмо на адрес small.corpora@gmail.com с темой "Регистрация в RLC". Пожалуйста, укажите в письме причины, по которым вам необходим доступ в корпус.</p>
+                      <p>В течение нескольких дней вы получите ответ с вашим персональным логином и временным паролем для первого входа.</p>
                   </div>
                 </div>	
 
-            <div class="panel panel-default content" id="three">
-                  <div class="panel-heading"><h4>{% trans '3' %}</h4></div>
+            <div class="panel panel-default content" id=forgotpassword">
+                  <div class="panel-heading"><h4>{% trans 'Что делать, если я забыл пароль' %}</h4></div>
                   <div class="panel-body">
-<p>...</p>
+<p>Если вы забыли пароль, отправьте письмо на адрес small.corpora@gmail.com с темой "Восстановление пароля в RLC". Пожалуйста, укажите в письме ваш логин. Если вы также не помните логин, достаточно просто написать нам с того же электронного адреса, с которым вы были зарегистрированы. </p>
+                       <p>В течение нескольких дней ваш пароль будет сброшен, и вы получите письмо с новым паролем.</p>
                   </div>
                 </div>				
         </div>
@@ -570,34 +604,33 @@
          <p>Описание полей метаразметки.</p>
           <ul>
               <li><b>Создатель</b> - логин пользователя, который загружает текст.</li>
-              <li><b>Источник текста</b> - </li>
+              <li><b>Источник текста</b> - имя и фамилия человека, предоставившего текст, и название организации/университета, в котором он работает </li>
           </ul>
           <p>Информация об авторе</p>
           <ul>
-              <li><b>Автор</b> - </li>
+              <li><b>Автор</b> - шифр или псевдоним автора текста (используется вместо имени, т.к. имена авторов должны оставаться анонимными)</li>
               <li><b>Пол</b> - пол автора текста.</li>
               <li><b>Курс</b> - учебный курс или программа, в рамках которых было задано написание текста (необязательное поле).</li>
               <li><b>Language background</b> - изучение русского языка как иностранного\эритажного.</li>
-              <li><b>Уровень</b> - уровень владения русским языком по шкале CEFR</li>
+              <li><b>Уровень</b> - уровень владения русским языком по шкале CEFR или ACTFL</li>
               <li><b>Доминантный язык</b> - язык, на котором студент общается большую часть времени</li>
-              <li><b>Код студента</b> - </li>
-              <li><b>Full metadata</b> - заполнены ли основные поля метаданных (доминантный язык, language background, уровень владения, mode)</li>
+{#              <li><b>Код студента</b> - </li>#}
+              <li><b>Full metadata</b> - заполнены ли основные поля метаданных (доминантный язык, language background, уровень владения, тип текста)</li>
           </ul>
           <p>Информация о тексте</p>
           <ul>
               <li><b>Дата</b> - год создания текста</li>
-              <li><b>Жанр</b> - </li>
-              <li><b>Тип текста</b> - </li>
-              <li><b>Аннотация</b> - </li>
+              <li><b>Жанр</b>  </li>
+              <li><b>Тип текста</b> - устный\письменный</li>
+{#              <li><b>Аннотация</b> - </li>#}
               <li><b>Временные ограничения</b> - </li>
-              <li><b>Mode</b> - устный\письменный</li>
               <li><b>Подкорпус</b> - RULEC | HSE</li>
           </ul>
 
-          <hr id="sec5">
-        <h4 id="annotating">{% trans 'Разметка ошибок' %}</h4>
-          <hr id="sec6">
-        <h4>..</h4>
+{#          <hr id="sec5">#}
+{#        <h4 id="annotating">{% trans 'Разметка ошибок' %}</h4>#}
+{#          <hr id="sec6">#}
+{#        <h4>..</h4>#}
 
 
 

@@ -127,8 +127,8 @@
 .annotator-widget {
 	margin: 0;
 	padding: 0;
-	bottom: 15px;
-	left: -18px;
+	bottom: 50px;
+	left: -120px;
 	min-width: 265px;
 	background-color: rgba(251, 251, 251, 0.98);
 	border: 1px solid rgba(122, 122, 122, 0.6);

@@ -253,7 +253,7 @@ $( document ).ready(function() {
                             </div>
                             <div class="panel-body">
                               <div class="radio">
-                                  <label class="radio-inline"><input type="radio" name="mode" value="у" disabled>{% trans "oral" %}</label>
+                                  <label class="radio-inline"><input type="radio" name="mode" value="у">{% trans "oral" %}</label>
                                   <label class="radio-inline"><input type="radio" name="mode" value="п">{% trans "written" %}</label>
                                   <label class="radio-inline"><input type="radio" name="mode" value="any" checked>{% trans "any" %}</label>
                                 </div>
@@ -287,11 +287,11 @@ $( document ).ready(function() {
                                 <div class="checkbox"><label><input type="checkbox" class="check" id="checkAll"> {% trans "Check All" %}</label></div>
                                 <div class="checkbox"><label><input type="checkbox" name="language[]" class="check" value="eng">{% trans "English" %}</label></div>
                                 <div class="checkbox"><label><input type="checkbox" name="language[]" class="check" value="ita">{% trans "Italian" %}</label></div>
-								<div class="checkbox"><label><input type="checkbox" name="language[]" class="check" value="nor" disabled>{% trans "Norwegian" %}</label></div>
+								<div class="checkbox"><label><input type="checkbox" name="language[]" class="check" value="nor" >{% trans "Norwegian" %}</label></div>
 
                             </div>
                             <div class="col-sm-6">
-							<div class="checkbox"><label><input type="checkbox" name="language[]" class="check" value="kor" disabled>{% trans "Korean" %}</label></div>
+							<div class="checkbox"><label><input type="checkbox" name="language[]" class="check" value="kor" >{% trans "Korean" %}</label></div>
                                 <div class="checkbox"><label><input type="checkbox" name="language[]" value="fr" class="check">{% trans "French" %}</label></div>
                                 <div class="checkbox"><label><input type="checkbox" name="language[]" value="ger" class="check">{% trans "German" %}</label></div>
 								<div class="checkbox"><label><input type="checkbox" name="language[]" value="ser" class="check">{% trans "Serbian" %}</label></div>
@@ -357,7 +357,7 @@ $( document ).ready(function() {
             <div class="col-sm-6">
                 <select class="form-control" name="format" id="sel1">
                     <option>{% trans "full" %}</option>
-                    <option>KWIC</option>
+{#                    <option>KWIC</option>#}
                 </select>
             </div>
           </div>
@@ -384,19 +384,19 @@ $( document ).ready(function() {
                 </select>
             </div>
           </div>
-          <div class="row">
-            <div class="col-sm-6"><label for="sel4">{% trans "Sort by" %}<br></label></div>
-            <div class="col-sm-6">
-                <select class="form-control"  name="sort_by" id="sel4">
-                    <option>{% trans "wordform" %}</option>
-                    <option>{% trans "lexeme" %}</option>
-                    <option>{% trans "left wordform" %}</option>
-                    <option>{% trans "distance" %}</option>
-                    <option>{% trans "year descending" %}</option>
+{#          <div class="row">#}
+{#            <div class="col-sm-6"><label for="sel4">{% trans "Sort by" %}<br></label></div>#}
+{#            <div class="col-sm-6">#}
+{#                <select class="form-control"  name="sort_by" id="sel4">#}
+{#                    <option>{% trans "wordform" %}</option>#}
+{#                    <option>{% trans "lexeme" %}</option>#}
+{#                    <option>{% trans "left wordform" %}</option>#}
+{#                    <option>{% trans "distance" %}</option>#}
+{#                    <option>{% trans "year descending" %}</option>#}
 {#                    <option>{% trans "student code" %}</option>#}
-                </select>
-            </div>
-          </div>
+{#                </select>#}
+{#            </div>#}
+{#          </div>#}
 
       </div>
       <div class="modal-footer">

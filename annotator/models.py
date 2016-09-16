@@ -5,6 +5,7 @@ u"""Модели, используемые в корпусе: Document, Sentence
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 # My modules
 from TestCorpus.db_utils import Database
@@ -61,50 +62,78 @@ class Document(models.Model):
     # опции для выбора в окне метаразметки
     NativeChoices = ((u'eng', _(u'English')), (u'nor', _(u'Norwegian')), (u'kor', _(u'Korean')),
                      (u'ita', _(u'Italian')), (u'fr', _(u'French')), (u'ger', _(u'German')),
-                     (u'ser', _(u'Serbian')))
+                     (u'ser', _(u'Serbian')),
+                     (u'jap', _(u'Japanese')),
+                     (u'chi', _(u'Chinese')),
+                     (u'kaz', _(u'Kazakh')),
+                     (u'dut', _(u'Dutch')),
+                     (u'swe', _(u'Swedish'))
+                     )
     ModeChoices = ((u'п', _(u'written')), (u'у', _(u'oral')))
     GenderChoices = ((u'ж', _(u'female')), (u'м', _(u'male')))
+    TimeChoices = ((u'limited', _(u'limited')), (u'unlimited', _(u'unlimited')))
     BackgroundChoices = ((u'HL', _(u'heritage')), (u'FL', _(u'foreign')))
     SubcorpusChoices = ((u"HSE", u"HSE"), (u"UNICE", u"UNICE"), (u"RULEC", u"RULEC"))
+    GenreChoices = ((u"answers", _(u"Answers to questions")),
+                    (u"nonacademic", _(u"Non–academic essay")),
+                    (u"academic", _(u"Academic essay")),
+                    (u"blog", _(u"Blog")),
+                    (u"letter", _(u"Letter")),
+                    (u"story", _(u"Story")),
+                    (u"paraphrase", _(u"Paraphrase")),
+                    (u"definition", _(u"Definition")),
+                    (u"bio", _(u"Biography")),
+                    (u"description", _(u"Description")),
+                    (u"summary", _(u"Summary")),
+                    (u"other", _(u"Other")),
+                    )
     LevelChoices = (
         (u'Beginner', (
-            (u'A1', _(u'A1')), (u'A2', _(u'A2')), (u'beg', _(u'Beginner'))
+            (u'NH', _(u'Novice High')), (u'NL', _(u'Novice Low')),
+            (u'NM', _(u'Novice Middle')),
+            (u'A1', _(u'A1')), (u'A2', _(u'A2'))
         )),
         (u'Intermediate', (
             (u'IH', _(u'Intermediate High')), (u'IL', _(u'Intermediate Low')),
             (u'IM', _(u'Intermediate Middle')), (u'B1', _(u'B1')),
-            (u'B2', _(u'B2')), (u'inter', _(u'Intermediate'))
+            (u'B2', _(u'B2'))
         )),
         (u'Advanced', (
             (u'AH', _(u'Advanced High')), (u'AL', _(u'Advanced Low')),
             (u'AM', _(u'Advanced Middle')), (u'C1', _(u'C1')),
-            (u'C2', _(u'C2')), (u'adv', _(u'Advanced'))
-        ))
+            (u'C2', _(u'C2'))
+        )),
+         (u'Other', _(u'Other')
+         )
     )
-    owner = models.ForeignKey(User, blank=True, null=True, verbose_name=_('owner'))
+    GeneralLevelChoices = ((u'beg', _(u'Beginner')),
+         (u'inter', _(u'Intermediate')),
+         (u'adv', _(u'Advanced')) )
+    owner = models.ForeignKey(User, blank=True, null=True, verbose_name=_(u'owner'), help_text=_(u"This is the corpus user who uploads the text to the corpus. Please, make sure that this field displays your login."))
     created = models.DateTimeField(auto_now_add=True, db_index=True)
-    title = models.CharField(max_length=250, db_index=True, null=True, blank=True, editable=True, verbose_name=_('title'))
-    body = models.TextField(help_text=_("Paste the text here."), verbose_name=_('text'))  # HTML
+    title = models.CharField(max_length=250, db_index=True, null=True, blank=True, editable=True, verbose_name=_(u'title'))
+    body = models.TextField(help_text=_(u"Paste the text here."), verbose_name=_(u'text'))  # HTML
     # todo probably should delete this field and create a special form in admin
-    author = models.CharField(max_length=100, help_text=_("Enter author's first and/or  second name."), verbose_name=_('author'))
-    mode = models.CharField(max_length=50, null=True, blank=True, db_index=True, verbose_name=_('mode'), choices=ModeChoices)
-    filename = models.CharField(max_length=5000, help_text=_("Enter the name of the folder and file from which the text is taken."), verbose_name=_('Source'))
+    author = models.CharField(max_length=100, help_text=_(u"Enter author's first and/or  second name."), verbose_name=_(u'author'))
+    mode = models.CharField(max_length=50, null=True, blank=False, db_index=True, verbose_name=_('mode'), choices=ModeChoices)
+    filename = models.CharField(max_length=5000, help_text=_(u"Name, surname and affiliation (institute, university or language school) of a person who provided the text"), verbose_name=_('Source'))
     subcorpus = models.CharField(max_length=5000, null=True, blank=True, verbose_name=_('subcorpus')
                                  , choices=SubcorpusChoices)
 
     # optional fields - need them for meta in CoRST
     date1 = models.IntegerField(null=True, blank=True, help_text=_("When the text was written, e.g. 2014."), verbose_name=_('date'))
     date2 = models.IntegerField(null=True, blank=True)
-    genre = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('genre'))
-    gender = models.CharField(max_length=5, null=True, blank=True, db_index=True, verbose_name=_('gender'), choices=GenderChoices)
-    course = models.CharField(max_length=100, null=True, blank=True, db_index=True, help_text=_("Enter the name of the program in which the text was assigned"), verbose_name=_('program'))
-    language_background = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('language background'), choices=BackgroundChoices)
-    text_type = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('type of text'))
-    level = models.CharField(max_length=10, null=True, blank=True, choices=LevelChoices, db_index=True, verbose_name=_('level'))
+    genre = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('genre'), choices=GenreChoices)
+    gender = models.CharField(max_length=5, null=True, blank=True, db_index=True, verbose_name=_('gender'), choices=GenderChoices, help_text=_(u"Gender of the text author"))
+    course = models.CharField(max_length=100, null=True, blank=True, db_index=True, help_text=_(u"Type and title of a language program (optinal field):<br>intensive vs regular course<br>Russian for heritage students vs Russian as a second language"), verbose_name=_('program'))
+    language_background = models.CharField(max_length=100, null=True, blank=False, db_index=True, verbose_name=_('language background'), choices=BackgroundChoices, help_text=_("Heritage speaker or second language learner"))
+    text_type = models.CharField(max_length=100, null=True, blank=False, db_index=True, verbose_name=_('type of text'))
+    level = models.CharField(max_length=10, null=True, blank=False, choices=LevelChoices, db_index=True, help_text=_(u"Enter the language level of the author. Both CEFR and ACTFL scales are available.</br>Please, use the option 'Other' if neither CEFR nor ACTFL scales are applicable."), verbose_name=_('scale'))
+    general_level = models.CharField(max_length=10, null=True, blank=False, choices=GeneralLevelChoices, db_index=True, verbose_name=_('level'))
     annotation = models.CharField(max_length=100, null=True, blank=True, db_index=True, verbose_name=_('annotation'))
-    student_code = models.IntegerField(null=True, blank=True, verbose_name=_('student code'))
-    time_limit = models.CharField(max_length=100, null=True, blank=True, verbose_name=_('time limit'))
-    native = models.CharField(max_length=10, null=True, blank=True, choices=NativeChoices, db_index=True, verbose_name=_('dominant language'))
+    student_code = models.IntegerField(null=True, blank=True, verbose_name=_('student code'), help_text=_(u"Pseudonym or code of the author (it is used instead of a real name in order to ensure the anonymity of the authors)"))
+    time_limit = models.CharField(max_length=100, null=True, blank=True, verbose_name=_('time limit'), choices=TimeChoices)
+    native = models.CharField(max_length=10, null=True, blank=False, choices=NativeChoices, db_index=True, verbose_name=_('dominant language'), help_text=_("Author's dominant language"))
     fullmeta = models.NullBooleanField(null=True, blank=True, verbose_name=_('full metadata'))
     # todo update fullmeta in save()
     # needed for general corpus statistics
